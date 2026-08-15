@@ -26,4 +26,9 @@ uv run ruff check .
 uv run pytest
 uv run pytest tests/test_health.py
 uv run pytest tests/test_health.py::test_health_check_returns_ok
+uv run python -m app.seed
 ```
+
+`uv run python -m app.seed` creates the idempotent
+`Engineering Intelligence Demo` dataset after migrations have run. It does
+not call external services.

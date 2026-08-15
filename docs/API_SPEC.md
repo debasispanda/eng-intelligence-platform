@@ -109,6 +109,9 @@ Empty data is represented by empty `kpis`, `releases`, `offTimelineEpics`,
 `mostActive`, and `mostFailed` arrays. The response still includes `appTitle`
 and `profile`.
 
+Metric calculation windows, ranking limits, and deterministic ordering are
+defined in `docs/DATABASE.md` under **Dashboard Source Mapping**.
+
 #### Errors
 
 | Status | Response | When |

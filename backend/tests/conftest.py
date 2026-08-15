@@ -1,11 +1,11 @@
 from uuid import uuid4
 
 import pytest
-from fastapi.testclient import TestClient
+from fastapi import FastAPI
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
-import app.models  # noqa: F401
+import app.models
 from app.core.config import Settings, get_settings
 from app.db.base import Base
 from app.main import create_app
@@ -17,8 +17,8 @@ def settings() -> Settings:
 
 
 @pytest.fixture
-def client(settings: Settings) -> TestClient:
-    return TestClient(create_app(settings))
+def app(settings: Settings) -> FastAPI:
+    return create_app(settings)
 
 
 @pytest.fixture

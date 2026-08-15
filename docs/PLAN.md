@@ -116,27 +116,27 @@ and cloud services; use fakes or controlled test fixtures at those boundaries.
   organization, repository, pull request, build, issue/epic, release or
   deployment, and risk data. Follow `docs/DATABASE.md`: UUID primary keys,
   audit timestamps, foreign keys, and indexes.
-- [ ] Create repositories/services that calculate dashboard metrics from
+- [x] Create repositories/services that calculate dashboard metrics from
   persisted records rather than returning static route-local values.
-- [ ] Provide an idempotent development seed path that creates a realistic
+- [x] Provide an idempotent development seed path that creates a realistic
   single-organization dataset matching the current dashboard scenarios.
-- [ ] Define how raw integration data maps to these normalized entities, while
+- [x] Define how raw integration data maps to these normalized entities, while
   leaving live GitHub/Jira synchronization for a later phase.
 
 ### Testing and validation
 
 - [x] Test migrations against an empty database and verify upgrade paths.
-- [ ] Test constraints, relations, indexes where query behavior depends on
+- [x] Test constraints, relations, indexes where query behavior depends on
   them, and organization scoping.
-- [ ] Test seed idempotency and metric calculations using controlled fixtures.
+- [x] Test seed idempotency and metric calculations using controlled fixtures.
 
 ### Success criteria
 
-- A fresh local database can be migrated and seeded repeatedly without
+- [x] A fresh local database can be migrated and seeded repeatedly without
   duplicate records.
-- Dashboard metrics derive from persisted data and are scoped to the intended
+- [x] Dashboard metrics derive from persisted data and are scoped to the intended
   organization.
-- Database tests cover the normal, empty, and no-data-yet states.
+- [x] Database tests cover the normal, empty, and no-data-yet states.
 
 ## Deferred schema cutover -- Move application tables from `public` to `platform`
 

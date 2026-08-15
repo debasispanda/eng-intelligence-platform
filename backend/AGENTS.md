@@ -11,6 +11,7 @@ uv run ruff check .
 uv run pytest
 uv run pytest tests/test_file.py
 uv run pytest tests/test_file.py::test_name
+uv run python -m app.seed
 ```
 
 ## Conventions
@@ -25,4 +26,8 @@ uv run pytest tests/test_file.py::test_name
 - Persistence tests use a generated temporary schema and drop it during
   teardown; run them only with a development database role that can create and
   drop schemas.
+- Route tests use `httpx.AsyncClient` with `ASGITransport`; do not add the
+  deprecated Starlette `TestClient`.
+- The seed command creates one idempotent demo organization after migrations;
+  it is development-only and must not be used as an integration substitute.
 - Add a focused test with every route, schema, or configuration change.
