@@ -66,7 +66,7 @@ and cloud services; use fakes or controlled test fixtures at those boundaries.
 
 - [x] Review API examples against every value consumed by `app/page.tsx` and
   `app/layout.tsx`.
-- [ ] Validate the response schema with a backend contract test fixture and a
+- [x] Validate the response schema with a backend contract test fixture and a
   TypeScript type-checking consumer.
 
 ### Success criteria

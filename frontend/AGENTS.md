@@ -42,7 +42,9 @@ Initial scaffolding is done with NextJS and recommended libraries. The MVP dashb
 ## Current Implementation
 
 - App Router layout is the shared shell and includes the global header on all routes.
-- Dashboard data lives in one typed mock-data module for easy API replacement later.
+- Dashboard data still renders from one typed mock-data module. The typed
+  server-side overview client is in `lib/dashboard-api.ts` and is ready for
+  the backend endpoint; it reads `BACKEND_API_BASE_URL`.
 - Reusable UI primitives are in place for stat cards, section cards, status badges, and the avatar menu.
 - The dashboard page is split into the agreed three zones and uses fixed dummy data.
 - Tests use Vitest + React Testing Library with explicit Vitest imports in test files and `jest-dom` matchers in the shared test setup.

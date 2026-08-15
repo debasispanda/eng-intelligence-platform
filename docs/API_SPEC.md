@@ -13,6 +13,9 @@
 - The initial connected dashboard is unauthenticated and serves the
   development default organization. Authentication and organization selection
   will replace this temporary scope in a later phase.
+- The Next.js server reads `BACKEND_API_BASE_URL` to reach the backend. Keep
+  this value server-only; do not use a `NEXT_PUBLIC_` variable for the
+  dashboard overview request.
 
 ## Auth
 
