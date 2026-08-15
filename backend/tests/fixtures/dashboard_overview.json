@@ -1,0 +1,50 @@
+{
+  "appTitle": "Engineering Intelligence",
+  "profile": {
+    "name": "Riley Chen",
+    "role": "VP Engineering",
+    "email": "riley.chen@example.com",
+    "avatarInitials": "RC"
+  },
+  "kpis": [
+    {
+      "title": "Open PRs",
+      "value": "38",
+      "delta": "+6 this week",
+      "trend": "up"
+    }
+  ],
+  "releases": [
+    {
+      "name": "Platform 2.8",
+      "owner": "Core Services",
+      "status": "On Track",
+      "completion": 74,
+      "date": "2026-08-04"
+    }
+  ],
+  "offTimelineEpics": [
+    {
+      "epic": "Tenant Isolation Upgrade",
+      "owner": "Platform Security",
+      "delayedByDays": 9,
+      "risk": "High"
+    }
+  ],
+  "hotRepositories": {
+    "mostActive": [
+      {
+        "repository": "frontend-app",
+        "metric": 36,
+        "label": "PRs this week"
+      }
+    ],
+    "mostFailed": [
+      {
+        "repository": "platform-api",
+        "metric": 7,
+        "label": "failed builds"
+      }
+    ]
+  }
+}

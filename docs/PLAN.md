@@ -48,17 +48,17 @@ and cloud services; use fakes or controlled test fixtures at those boundaries.
 
 ### Work
 
-- [ ] Expand `docs/API_SPEC.md` with the exact `GET /dashboard/overview`
+- [x] Expand `docs/API_SPEC.md` with the exact `GET /dashboard/overview`
   response schema, including KPI, release, epic-risk, and hot-repository
   fields currently rendered by the dashboard.
-- [ ] Define date/time, identifier, pagination, empty-state, and API error
+- [x] Define date/time, identifier, pagination, empty-state, and API error
   conventions shared by the frontend and backend.
-- [ ] Decide and document the development PostgreSQL/pgvector setup,
-  migration tool, ORM/data-access approach, and configuration/environment
-  variable names.
-- [ ] Record that authentication is deferred for the first connected dashboard
+- [x] Use the platform-provided PostgreSQL instance with pgvector on port
+  5432. Configure access with `DATABASE_URL`; select and document the
+  migration and data-access tooling in Phase 1.
+- [x] Record that authentication is deferred for the first connected dashboard
   and define the temporary organization/data-scoping approach.
-- [ ] Map the API response to the frontend's current
+- [x] Map the API response to the frontend's current
   `lib/dashboard-data.ts` types; resolve deliberate differences before
   implementation.
 
@@ -137,6 +137,44 @@ and cloud services; use fakes or controlled test fixtures at those boundaries.
 - Dashboard metrics derive from persisted data and are scoped to the intended
   organization.
 - Database tests cover the normal, empty, and no-data-yet states.
+
+## Deferred schema cutover -- Move application tables from `public` to `platform`
+
+`DATABASE_SCHEMA` is now configurable. Existing tables and Alembic version
+history remain in `public` until this cutover is explicitly scheduled; do not
+change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
+
+### Work
+
+- [ ] Inventory the application tables, foreign keys, indexes, migration
+  version, and any non-application objects currently in `public`.
+- [ ] Confirm the `platform` schema exists, has the required owner and grants,
+  and is dedicated to this application.
+- [ ] Update SQLAlchemy engine setup and Alembic configuration to apply the
+  configured schema search path and store Alembic version history in that
+  schema.
+- [ ] Create a transactional, rehearsed migration that moves all application
+  tables, constraints, indexes, and Alembic state to `platform`.
+- [ ] Update non-application clients, monitoring, backups, and deployment
+  configuration to use `DATABASE_SCHEMA=platform`.
+- [ ] Retain a tested rollback procedure before changing production
+  configuration.
+
+### Testing and validation
+
+- [ ] Rehearse the cutover against a restored production-like database and
+  verify row counts, foreign keys, indexes, and Alembic head before and after.
+- [ ] Run the full backend and frontend suites with
+  `DATABASE_SCHEMA=platform`.
+- [ ] Verify that a rollback restores the original `public` schema state
+  without data loss.
+
+### Success criteria
+
+- All application tables and Alembic metadata reside in `platform`; no
+  application queries depend on `public`.
+- Dashboard API and frontend integration pass against `platform`.
+- The cutover and rollback are documented and reproducible.
 
 ## Phase 3 -- Deliver the dashboard overview API
 
