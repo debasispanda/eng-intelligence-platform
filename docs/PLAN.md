@@ -88,7 +88,7 @@ and cloud services; use fakes or controlled test fixtures at those boundaries.
   origin, and a health endpoint.
 - [x] Add the selected database driver, migration tooling, test runner, and
   linter to `backend/pyproject.toml` and lock the dependencies with `uv`.
-- [ ] Create test fixtures for an isolated database and FastAPI client.
+- [x] Create test fixtures for an isolated database and FastAPI client.
 - [x] Add `backend/AGENTS.md` with the backend commands and conventions once
   the toolchain is established.
 

@@ -22,4 +22,7 @@ uv run pytest tests/test_file.py::test_name
 - Use `DATABASE_URL` and `DATABASE_SCHEMA` for the platform
   PostgreSQL/pgvector instance. Existing tables remain in `public` until the
   planned schema cutover. Never commit `.env` files or credentials.
+- Persistence tests use a generated temporary schema and drop it during
+  teardown; run them only with a development database role that can create and
+  drop schemas.
 - Add a focused test with every route, schema, or configuration change.

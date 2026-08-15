@@ -14,6 +14,10 @@ with pgvector on port 5432. `DATABASE_SCHEMA` is configurable and currently
 defaults to `public` to preserve the existing tables; the planned target schema
 is `platform`.
 
+Persistence tests create and remove a uniquely named temporary PostgreSQL
+schema. The configured database role therefore needs permission to create and
+drop schemas in the development database.
+
 ## Commands
 
 ```bash
