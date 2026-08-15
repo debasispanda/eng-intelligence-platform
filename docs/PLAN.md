@@ -64,7 +64,7 @@ and cloud services; use fakes or controlled test fixtures at those boundaries.
 
 ### Testing and validation
 
-- [ ] Review API examples against every value consumed by `app/page.tsx` and
+- [x] Review API examples against every value consumed by `app/page.tsx` and
   `app/layout.tsx`.
 - [ ] Validate the response schema with a backend contract test fixture and a
   TypeScript type-checking consumer.
@@ -81,23 +81,23 @@ and cloud services; use fakes or controlled test fixtures at those boundaries.
 
 ### Work
 
-- [ ] Replace the sample FastAPI endpoints with an application package
+- [x] Replace the sample FastAPI endpoints with an application package
   organized around configuration, routing, domain services, and persistence.
-- [ ] Add environment-based settings, explicit development/test configuration,
+- [x] Add environment-based settings, explicit development/test configuration,
   structured application logging, CORS restricted to the local frontend
   origin, and a health endpoint.
-- [ ] Add the selected database driver, migration tooling, test runner, and
+- [x] Add the selected database driver, migration tooling, test runner, and
   linter to `backend/pyproject.toml` and lock the dependencies with `uv`.
 - [ ] Create test fixtures for an isolated database and FastAPI client.
-- [ ] Add `backend/AGENTS.md` with the backend commands and conventions once
+- [x] Add `backend/AGENTS.md` with the backend commands and conventions once
   the toolchain is established.
 
 ### Testing and validation
 
-- [ ] Test settings validation, health responses, CORS behavior, and router
+- [x] Test settings validation, health responses, CORS behavior, and router
   registration.
-- [ ] Run `uv run ruff check .` and `uv run pytest`.
-- [ ] Start the app locally and verify the health endpoint responds without
+- [x] Run `uv run ruff check .` and `uv run pytest`.
+- [x] Start the app locally and verify the health endpoint responds without
   requiring GitHub, Jira, or LLM credentials.
 
 ### Success criteria
@@ -112,7 +112,7 @@ and cloud services; use fakes or controlled test fixtures at those boundaries.
 
 ### Work
 
-- [ ] Implement initial migrations for the dashboard-relevant entities:
+- [x] Implement initial migrations for the dashboard-relevant entities:
   organization, repository, pull request, build, issue/epic, release or
   deployment, and risk data. Follow `docs/DATABASE.md`: UUID primary keys,
   audit timestamps, foreign keys, and indexes.
@@ -125,7 +125,7 @@ and cloud services; use fakes or controlled test fixtures at those boundaries.
 
 ### Testing and validation
 
-- [ ] Test migrations against an empty database and verify upgrade paths.
+- [x] Test migrations against an empty database and verify upgrade paths.
 - [ ] Test constraints, relations, indexes where query behavior depends on
   them, and organization scoping.
 - [ ] Test seed idempotency and metric calculations using controlled fixtures.
