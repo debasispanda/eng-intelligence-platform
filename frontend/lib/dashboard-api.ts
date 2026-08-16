@@ -1,22 +1,6 @@
-import type {
-  EpicTimelineRow,
-  HotRepository,
-  KpiCard,
-  ReleaseRow,
-  UserProfile,
-} from "@/lib/dashboard-data";
+import type { DashboardOverview } from "@/lib/dashboard-types";
 
-export type DashboardOverview = {
-  appTitle: string;
-  profile: UserProfile;
-  kpis: KpiCard[];
-  releases: ReleaseRow[];
-  offTimelineEpics: EpicTimelineRow[];
-  hotRepositories: {
-    mostActive: HotRepository[];
-    mostFailed: HotRepository[];
-  };
-};
+export type { DashboardOverview } from "@/lib/dashboard-types";
 
 const dashboardApiBaseUrl =
   process.env.BACKEND_API_BASE_URL ?? "http://localhost:8000";
@@ -26,7 +10,7 @@ export async function getDashboardOverview(
 ): Promise<DashboardOverview> {
   const response = await fetcher(
     new URL("/dashboard/overview", dashboardApiBaseUrl),
-    { headers: { Accept: "application/json" } },
+    { cache: "no-store", headers: { Accept: "application/json" } },
   );
 
   if (!response.ok) {

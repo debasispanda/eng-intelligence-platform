@@ -1,11 +1,25 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import Home from "@/app/page";
-import { dashboardData } from "@/lib/dashboard-data";
+import Loading from "@/app/loading";
+import { DashboardProvider } from "@/components/dashboard/dashboard-provider";
+import type { DashboardOverview } from "@/lib/dashboard-types";
+import { dashboardData } from "@/test/fixtures/dashboard-overview";
+
+function renderDashboard(
+  overview: DashboardOverview | null = dashboardData,
+  error: string | null = null,
+) {
+  return render(
+    <DashboardProvider error={error} overview={overview}>
+      <Home />
+    </DashboardProvider>,
+  );
+}
 
 describe("Dashboard page", () => {
   it("renders the core KPI cards", () => {
-    render(<Home />);
+    renderDashboard();
 
     expect(screen.getByText("Open PRs")).toBeInTheDocument();
     expect(screen.getByText("Merged PRs")).toBeInTheDocument();
@@ -14,7 +28,7 @@ describe("Dashboard page", () => {
   });
 
   it("renders release rows and epics table", () => {
-    render(<Home />);
+    renderDashboard();
 
     expect(screen.getByText("Release Status")).toBeInTheDocument();
     expect(screen.getByText("Platform 2.8")).toBeInTheDocument();
@@ -23,7 +37,7 @@ describe("Dashboard page", () => {
   });
 
   it("keeps release rows structured for narrow layouts", () => {
-    render(<Home />);
+    renderDashboard();
 
     const releaseTable = screen.getByRole("table", { name: "Release status rows" });
 
@@ -34,11 +48,38 @@ describe("Dashboard page", () => {
   });
 
   it("renders both hot repository lists", () => {
-    render(<Home />);
+    renderDashboard();
 
     expect(screen.getByText("Hot Repositories: Most Active")).toBeInTheDocument();
     expect(screen.getByText("Hot Repositories: Most Failed")).toBeInTheDocument();
-    expect(screen.getAllByText("frontend-app").length).toBeGreaterThan(1);
+    expect(screen.getByText("frontend-app")).toBeInTheDocument();
     expect(screen.getByText("mobile-sdk")).toBeInTheDocument();
+  });
+
+  it("renders an explicit empty state", () => {
+    renderDashboard({
+      ...dashboardData,
+      kpis: [],
+      releases: [],
+      offTimelineEpics: [],
+      hotRepositories: { mostActive: [], mostFailed: [] },
+    });
+
+    expect(screen.getByRole("status")).toHaveTextContent("No dashboard data yet");
+  });
+
+  it("renders an explicit backend error state", () => {
+    renderDashboard(null, "Dashboard data is unavailable.");
+
+    expect(screen.getByRole("status")).toHaveTextContent("Dashboard unavailable");
+    expect(screen.getByText("Dashboard data is unavailable.")).toBeInTheDocument();
+  });
+
+  it("renders a loading state", () => {
+    render(<Loading />);
+
+    expect(screen.getByRole("status", { name: "Loading dashboard" })).toHaveTextContent(
+      "Loading dashboard data...",
+    );
   });
 });

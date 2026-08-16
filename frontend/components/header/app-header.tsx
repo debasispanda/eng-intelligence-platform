@@ -1,4 +1,4 @@
-import type { UserProfile } from "@/lib/dashboard-data";
+import type { UserProfile } from "@/lib/dashboard-types";
 import { UserMenu } from "@/components/header/user-menu";
 
 type AppHeaderProps = {

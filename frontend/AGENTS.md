@@ -3,7 +3,9 @@ Build an AI-powered Engineering Intelligence Platform that helps engineering lea
 
 ## Starting Point
 
-Initial scaffolding is done with NextJS and recommended libraries. The MVP dashboard UI, shared header, reusable components, typed mock data, and test scaffolding are now implemented.
+Initial scaffolding is done with NextJS and recommended libraries. The MVP
+dashboard UI, shared header, reusable components, backend overview integration,
+and test scaffolding are now implemented.
 
 ## Business Requirements
 
@@ -12,7 +14,7 @@ Initial scaffolding is done with NextJS and recommended libraries. The MVP dashb
 - Don't implement any authentication mechanism for now.
 - The dashboard should show project details like Open PRs, Merged PRs, Failed Builds, Blocked Tickets, Epics not running as per timeline, Release status, Hot repositories etc.
 - The priority is a slick, professional, simple black/light gray theme UI/UX with very simple features
-- The app should open with dummy data populated for the dashboard
+- The app should render persisted dashboard overview data from the backend
 
 ## Confirmed MVP Decisions (Locked)
 
@@ -33,7 +35,9 @@ Initial scaffolding is done with NextJS and recommended libraries. The MVP dashb
   1. KPI strip: Open PRs, Merged PRs, Failed Builds, Blocked Tickets.
   2. Health section: per-release status rows and epics off-timeline short table.
   3. Activity section: hot repositories split into most active and most failed.
-- Use dummy data only, strongly typed, centralized in one mock-data module for easy API replacement later.
+- Fetch the typed dashboard overview server-side through
+  `BACKEND_API_BASE_URL`; keep test data in `test/fixtures/`, not production
+  modules.
 - Build small reusable UI primitives for consistency: stat card, status badge, section card, avatar menu.
 - Define explicit design tokens in global styles to match the provided light/dark palette.
 - Keep interactions minimal and clear; prioritize professional visual polish over feature breadth.
@@ -42,12 +46,14 @@ Initial scaffolding is done with NextJS and recommended libraries. The MVP dashb
 ## Current Implementation
 
 - App Router layout is the shared shell and includes the global header on all routes.
-- Dashboard data still renders from one typed mock-data module. The typed
-  server-side overview client is in `lib/dashboard-api.ts` and is ready for
-  the backend endpoint; it reads `BACKEND_API_BASE_URL`.
+- Dashboard data is fetched by the server-side overview client in
+  `lib/dashboard-api.ts`, then shared by the global header and page through
+  the dashboard provider. It reads server-only `BACKEND_API_BASE_URL`.
 - Reusable UI primitives are in place for stat cards, section cards, status badges, and the avatar menu.
 - The dashboard page is split into the agreed three zones and uses fixed dummy data.
 - Tests use Vitest + React Testing Library with explicit Vitest imports in test files and `jest-dom` matchers in the shared test setup.
+- The dashboard has explicit loading, unavailable, and no-data states; never
+  silently render test fixtures after an overview request fails.
 
 ## Technical Details
 

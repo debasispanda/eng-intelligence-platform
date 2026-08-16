@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { AppHeader } from "@/components/header/app-header";
-import { dashboardData } from "@/lib/dashboard-data";
+import { dashboardData } from "@/test/fixtures/dashboard-overview";
 
 describe("AppHeader", () => {
   it("renders brand title and profile avatar", () => {

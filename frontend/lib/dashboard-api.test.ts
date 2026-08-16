@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { getDashboardOverview } from "@/lib/dashboard-api";
-import { dashboardData } from "@/lib/dashboard-data";
+import { dashboardData } from "@/test/fixtures/dashboard-overview";
 
 describe("getDashboardOverview", () => {
   it("returns the typed dashboard overview response", async () => {
@@ -11,7 +11,7 @@ describe("getDashboardOverview", () => {
     await expect(getDashboardOverview(fetcher)).resolves.toEqual(dashboardData);
     expect(fetcher).toHaveBeenCalledWith(
       new URL("http://localhost:8000/dashboard/overview"),
-      { headers: { Accept: "application/json" } },
+      { cache: "no-store", headers: { Accept: "application/json" } },
     );
   });
 

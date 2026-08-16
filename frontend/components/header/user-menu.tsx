@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { UserProfile } from "@/lib/dashboard-data";
+import type { UserProfile } from "@/lib/dashboard-types";
 
 type UserMenuProps = {
   profile: UserProfile;

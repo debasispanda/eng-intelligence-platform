@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { dashboardData } from "@/lib/dashboard-data";
 import { AppHeader } from "@/components/header/app-header";
+import { DashboardProvider } from "@/components/dashboard/dashboard-provider";
+import { getDashboardOverview } from "@/lib/dashboard-api";
+import type { DashboardOverview, UserProfile } from "@/lib/dashboard-types";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,21 +22,42 @@ export const metadata: Metadata = {
     "Delivery health dashboard for engineering leaders with release, quality, and risk signals.",
 };
 
-export default function RootLayout({
+const unavailableProfile: UserProfile = {
+  name: "Dashboard unavailable",
+  role: "Profile data could not be loaded",
+  email: "",
+  avatarInitials: "!",
+};
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let overview: DashboardOverview | null = null;
+  let error: string | null = null;
+
+  try {
+    overview = await getDashboardOverview();
+  } catch {
+    error = "Dashboard data is unavailable. Check the backend connection and try again.";
+  }
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full app-body">
-        <div className="app-shell">
-          <AppHeader appTitle={dashboardData.appTitle} profile={dashboardData.profile} />
-          <main className="app-main">{children}</main>
-        </div>
+        <DashboardProvider error={error} overview={overview}>
+          <div className="app-shell">
+            <AppHeader
+              appTitle={overview?.appTitle ?? "Engineering Intelligence"}
+              profile={overview?.profile ?? unavailableProfile}
+            />
+            <main className="app-main">{children}</main>
+          </div>
+        </DashboardProvider>
       </body>
     </html>
   );

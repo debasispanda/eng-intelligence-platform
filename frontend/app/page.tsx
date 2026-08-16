@@ -1,13 +1,45 @@
-import { dashboardData } from "@/lib/dashboard-data";
+"use client";
+
+import { useDashboardData } from "@/components/dashboard/dashboard-provider";
 import { SectionCard } from "@/components/ui/section-card";
 import { StatCard } from "@/components/ui/stat-card";
 import { StatusBadge } from "@/components/ui/status-badge";
+import type { DashboardOverview } from "@/lib/dashboard-types";
 
 export default function Home() {
+  const { error, overview } = useDashboardData();
+
+  if (error !== null) {
+    return <DashboardMessage title="Dashboard unavailable" message={error} />;
+  }
+
+  if (overview === null || isDashboardEmpty(overview)) {
+    return (
+      <DashboardMessage
+        title="No dashboard data yet"
+        message="Connect an engineering data source or seed the development database to populate this overview."
+      />
+    );
+  }
+
+  return <DashboardContent overview={overview} />;
+}
+
+function isDashboardEmpty(overview: DashboardOverview): boolean {
+  return (
+    overview.kpis.length === 0 &&
+    overview.releases.length === 0 &&
+    overview.offTimelineEpics.length === 0 &&
+    overview.hotRepositories.mostActive.length === 0 &&
+    overview.hotRepositories.mostFailed.length === 0
+  );
+}
+
+export function DashboardContent({ overview }: { overview: DashboardOverview }) {
   return (
     <div className="dashboard-wrap">
       <section className="kpi-grid" aria-label="Key metrics">
-        {dashboardData.kpis.map((card) => (
+        {overview.kpis.map((card) => (
           <div key={card.title} className="reveal">
             <StatCard
               title={card.title}
@@ -32,7 +64,7 @@ export default function Home() {
               <span role="columnheader">Completion</span>
               <span role="columnheader">Target</span>
             </div>
-            {dashboardData.releases.map((release) => (
+            {overview.releases.map((release) => (
               <div key={release.name} className="table-row" role="row">
                 <span role="cell" data-label="Release">
                   {release.name}
@@ -68,7 +100,7 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {dashboardData.offTimelineEpics.map((epic) => (
+              {overview.offTimelineEpics.map((epic) => (
                 <tr key={epic.epic}>
                   <td>{epic.epic}</td>
                   <td>{epic.owner}</td>
@@ -89,7 +121,7 @@ export default function Home() {
           description="Repositories with highest pull request activity"
         >
           <ul className="repo-list">
-            {dashboardData.hotRepositories.mostActive.map((repo) => (
+            {overview.hotRepositories.mostActive.map((repo) => (
               <li key={repo.repository} className="repo-item">
                 <span>{repo.repository}</span>
                 <span>
@@ -105,7 +137,7 @@ export default function Home() {
           description="Repositories with highest build instability"
         >
           <ul className="repo-list">
-            {dashboardData.hotRepositories.mostFailed.map((repo) => (
+            {overview.hotRepositories.mostFailed.map((repo) => (
               <li key={repo.repository} className="repo-item">
                 <span>{repo.repository}</span>
                 <span>
@@ -117,5 +149,20 @@ export default function Home() {
         </SectionCard>
       </section>
     </div>
+  );
+}
+
+export function DashboardMessage({
+  message,
+  title,
+}: {
+  message: string;
+  title: string;
+}) {
+  return (
+    <section className="dashboard-message" aria-live="polite" role="status">
+      <h1>{title}</h1>
+      <p>{message}</p>
+    </section>
   );
 }

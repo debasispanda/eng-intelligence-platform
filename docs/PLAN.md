@@ -210,31 +210,31 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
 
 ### Work
 
-- [ ] Add a typed frontend API client and response-to-view-model mapping at the
+- [x] Add a typed frontend API client and response-to-view-model mapping at the
   current mock-data seam.
-- [ ] Replace direct dashboard mock-data reads with the overview request while
+- [x] Replace direct dashboard mock-data reads with the overview request while
   keeping presentation components and the global header intact.
-- [ ] Implement a loading state, API error state, and no-data state that
+- [x] Implement a loading state, API error state, and no-data state that
   preserve the existing polished light/dark design.
-- [ ] Move mock data to test fixtures or an explicit development fallback only
+- [x] Move mock data to test fixtures or an explicit development fallback only
   if required; do not silently mask backend failures in normal use.
-- [ ] Configure the frontend with the backend base URL through documented
+- [x] Configure the frontend with the backend base URL through documented
   environment configuration.
 
 ### Testing and validation
 
-- [ ] Unit-test the API mapping and each loading, error, and empty UI state.
-- [ ] Update existing dashboard rendering tests to use controlled API fixtures
+- [x] Unit-test the API mapping and each loading, error, and empty UI state.
+- [x] Update existing dashboard rendering tests to use controlled API fixtures
   instead of module-level production mock data.
-- [ ] Run `npm run lint`, `npm run test`, and `npm run build`.
+- [x] Run `npm run lint`, `npm run test`, and `npm run build`.
 
 ### Success criteria
 
-- With the backend running, the dashboard renders persisted overview data
+- [x] With the backend running, the dashboard renders persisted overview data
   without editing frontend source code.
-- A backend failure is visible to the user and does not render stale data as a
+- [x] A backend failure is visible to the user and does not render stale data as a
   successful dashboard.
-- Existing header, status badge, responsive table, and theme behavior remain
+- [x] Existing header, status badge, responsive table, and theme behavior remain
   intact.
 
 ## Phase 5 -- Verify the end-to-end dashboard path
