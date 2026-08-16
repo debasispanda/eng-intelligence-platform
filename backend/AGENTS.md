@@ -30,4 +30,7 @@ uv run python -m app.seed
   deprecated Starlette `TestClient`.
 - The seed command creates one idempotent demo organization after migrations;
   it is development-only and must not be used as an integration substitute.
+- The unauthenticated overview route scopes data to
+  `DEFAULT_ORGANIZATION_NAME`; authentication replaces this development-only
+  selection in a later phase.
 - Add a focused test with every route, schema, or configuration change.

@@ -180,31 +180,31 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
 
 ### Work
 
-- [ ] Implement `GET /dashboard/overview` according to the approved API
+- [x] Implement `GET /dashboard/overview` according to the approved API
   contract.
-- [ ] Keep response schemas separate from persistence models and return
+- [x] Keep response schemas separate from persistence models and return
   explicit, stable field names and value types.
-- [ ] Aggregate the KPI strip, release status, off-timeline epics, and both
+- [x] Aggregate the KPI strip, release status, off-timeline epics, and both
   hot-repository rankings in a dashboard service.
-- [ ] Return meaningful empty results for organizations without data and
+- [x] Return meaningful empty results for organizations without data and
   consistent error responses for invalid requests or unavailable
   dependencies.
-- [ ] Document the finalized endpoint and examples in `docs/API_SPEC.md`.
+- [x] Document the finalized endpoint and examples in `docs/API_SPEC.md`.
 
 ### Testing and validation
 
-- [ ] Unit-test each aggregation rule, ordering rule, and risk/status mapping.
-- [ ] Add route-level contract tests for normal, empty, and error responses.
-- [ ] Run the API against the seeded database and compare the response to the
+- [x] Unit-test each aggregation rule, ordering rule, and risk/status mapping.
+- [x] Add route-level contract tests for normal, empty, and error responses.
+- [x] Run the API against the seeded database and compare the response to the
   documented example.
 
 ### Success criteria
 
-- The endpoint returns all data required by the existing dashboard in one
+- [x] The endpoint returns all data required by the existing dashboard in one
   documented response.
-- Response validation, ordering, and empty-state behavior are covered by
+- [x] Response validation, ordering, and empty-state behavior are covered by
   automated tests.
-- No frontend knowledge leaks into database schema or route implementation.
+- [x] No frontend knowledge leaks into database schema or route implementation.
 
 ## Phase 4 -- Connect the Next.js dashboard
 

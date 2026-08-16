@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     frontend_origin: str = "http://localhost:3000"
     database_url: str | None = None
     database_schema: str = "public"
+    default_organization_name: str = "Engineering Intelligence Demo"
 
     @field_validator("database_url")
     @classmethod

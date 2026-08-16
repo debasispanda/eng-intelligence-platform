@@ -32,3 +32,6 @@ uv run python -m app.seed
 `uv run python -m app.seed` creates the idempotent
 `Engineering Intelligence Demo` dataset after migrations have run. It does
 not call external services.
+
+`GET /dashboard/overview` serves the organization named by
+`DEFAULT_ORGANIZATION_NAME`, which defaults to that demo organization.

@@ -11,7 +11,8 @@
 - Error responses use `{ "detail": "<human-readable message>" }`. Validation
   failures follow FastAPI's standard `422` response shape.
 - The initial connected dashboard is unauthenticated and serves the
-  development default organization. Authentication and organization selection
+  `DEFAULT_ORGANIZATION_NAME` development organization, which defaults to
+  `Engineering Intelligence Demo`. Authentication and organization selection
   will replace this temporary scope in a later phase.
 - The Next.js server reads `BACKEND_API_BASE_URL` to reach the backend. Keep
   this value server-only; do not use a `NEXT_PUBLIC_` variable for the
