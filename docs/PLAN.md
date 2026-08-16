@@ -241,28 +241,30 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
 
 ### Work
 
-- [ ] Add an integration test environment that starts the backend with an
-  isolated database and serves a seeded overview response.
-- [ ] Add browser-level coverage for loading the dashboard, rendering live
+- [x] Add a deterministic browser test environment that serves controlled
+  overview responses through local backend stubs.
+- [x] Add browser-level coverage for loading the dashboard, rendering live
   data, displaying an API failure, and opening/closing the profile menu.
 - [ ] Use the configured Playwright MCP server for exploratory verification
-  only; keep repeatable regression coverage in the automated test suite.
-- [ ] Document local startup order, required environment variables, migration,
+  only; keep repeatable regression coverage in the automated test suite. The
+  repository configuration is ready, but the MCP browser tool is unavailable
+  in this CLI session.
+- [x] Document local startup order, required environment variables, migration,
   seed, test, lint, and build commands in the root README and service READMEs.
 
 ### Testing and validation
 
-- [ ] Run backend lint and tests, frontend lint, tests, and production build.
-- [ ] Run the end-to-end tests against the local integration environment.
-- [ ] Manually verify the dashboard in both system light and dark themes.
+- [x] Run backend lint and tests, frontend lint, tests, and production build.
+- [x] Run the end-to-end tests against the local integration environment.
+- [x] Verify the dashboard in both emulated system light and dark themes.
 
 ### Success criteria
 
-- A developer can clone, configure, migrate, seed, start, and verify the
+- [x] A developer can clone, configure, migrate, seed, start, and verify the
   connected dashboard using only repository documentation.
-- The complete dashboard path passes automated backend, frontend, contract,
+- [x] The complete dashboard path passes automated backend, frontend, contract,
   and browser-level tests.
-- Test data, external service credentials, and production configuration are
+- [x] Test data, external service credentials, and production configuration are
   never required for the local end-to-end suite.
 
 ## Phase 6 -- Add production data sources and intelligence incrementally

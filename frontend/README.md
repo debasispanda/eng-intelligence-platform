@@ -15,5 +15,12 @@ loading, error, or empty states instead of production mock data.
 npm run dev
 npm run lint
 npm run test
+npm run test:e2e
 npm run build
 ```
+
+The browser suite starts two local Next.js instances and deterministic backend
+stubs. It verifies live overview rendering, the profile menu, and the explicit
+backend-error state without external credentials. For a real seeded check,
+start the backend with migrations applied and `uv run python -m app.seed`, then
+start the frontend with `BACKEND_API_BASE_URL` set to the backend URL.
