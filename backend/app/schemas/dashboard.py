@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -64,3 +64,13 @@ class DashboardOverview(ApiModel):
     releases: list[ReleaseRow]
     off_timeline_epics: list[EpicTimelineRow]
     hot_repositories: HotRepositories
+
+
+class IngestionRunSummary(ApiModel):
+    provider: Literal["github", "jira"]
+    status: Literal["running", "succeeded", "failed"]
+    attempt_count: int = Field(ge=0)
+    started_at: datetime
+    finished_at: datetime | None
+    records_synchronized: int = Field(ge=0)
+    error_message: str | None

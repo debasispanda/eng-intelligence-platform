@@ -2,15 +2,15 @@ import logging
 from collections.abc import Iterator
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings, get_settings
 from app.db.session import create_engine_from_url, session_scope
-from app.models import Organization
-from app.schemas.dashboard import DashboardOverview
+from app.models import IngestionRun, Organization
+from app.schemas.dashboard import DashboardOverview, IngestionRunSummary
 from app.services.dashboard import DashboardService
 
 logger = logging.getLogger(__name__)
@@ -52,4 +52,37 @@ def get_dashboard_overview(
         raise HTTPException(
             status_code=500,
             detail="Dashboard overview is unavailable.",
+        ) from None
+
+
+@router.get("/ingestion-runs", response_model=list[IngestionRunSummary])
+def get_ingestion_runs(
+    session: Annotated[Session, Depends(get_dashboard_session)],
+    settings: Annotated[Settings, Depends(get_settings)],
+    limit: Annotated[int, Query(ge=1, le=50)] = 10,
+) -> list[IngestionRunSummary]:
+    try:
+        organization_id = session.scalar(
+            select(Organization.id).where(
+                Organization.name == settings.default_organization_name
+            )
+        )
+        if organization_id is None:
+            raise LookupError("The configured dashboard organization does not exist.")
+
+        runs = session.scalars(
+            select(IngestionRun)
+            .where(IngestionRun.organization_id == organization_id)
+            .order_by(IngestionRun.started_at.desc())
+            .limit(limit)
+        ).all()
+        return [
+            IngestionRunSummary.model_validate(run, from_attributes=True)
+            for run in runs
+        ]
+    except (LookupError, SQLAlchemyError):
+        logger.exception("Unable to load ingestion run history.")
+        raise HTTPException(
+            status_code=500,
+            detail="Ingestion run history is unavailable.",
         ) from None

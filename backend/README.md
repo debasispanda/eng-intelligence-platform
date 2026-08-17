@@ -29,6 +29,7 @@ uv run pytest tests/test_health.py::test_health_check_returns_ok
 uv run python -m app.seed
 uv run python -m app.sync_github
 uv run python -m app.sync_jira
+uv run python -m app.worker
 ```
 
 `uv run python -m app.seed` creates the idempotent
@@ -81,3 +82,25 @@ normalized epic risk and schedule delay. Releases use version dates and
 report `0%` until released or `100%` when released because Jira versions do
 not provide a normalized completion percentage. Sprint/board ingestion is
 deferred until a normalized sprint model is introduced.
+
+## Platform-managed dependencies and workers
+
+PostgreSQL and Redis are managed by the separate `platform` repository. Start
+those services there, then configure this backend with the platform-provided
+`DATABASE_URL` and `REDIS_URL`.
+
+```bash
+# Run from the platform repository
+docker compose up -d postgres redis
+```
+
+With `REDIS_URL=redis://localhost:6379/0`, run an RQ worker in another backend
+terminal:
+
+```bash
+uv run python -m app.worker
+```
+
+Jobs can be enqueued with `enqueue_sync("github")` or `enqueue_sync("jira")`
+from `app.queue`. The worker invokes the same synchronization entrypoints used
+by the CLI.

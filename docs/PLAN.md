@@ -314,10 +314,12 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
 
 ### Work
 
-- [ ] Introduce background workers and Redis for non-request ingestion and
-  aggregation work.
+- [x] Add an RQ worker entrypoint for ingestion jobs using PostgreSQL and Redis
+  managed by the separate `platform` repository.
 - [x] Add a database-backed ingestion run ledger and bounded retry orchestration
   to the current GitHub and Jira commands before moving them to workers.
+- [x] Expose organization-scoped ingestion run history through a read-only API
+  for operational visibility.
 
 ### Testing and validation
 
@@ -325,6 +327,8 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
   provider failures, and persisted run status.
 - [x] Run the full backend test suite and lint checks after the orchestration
   changes.
+- [x] Contract-test ingestion run ordering, limits, organization scoping, and
+  documented failure responses.
 
 ### Success criteria
 
@@ -332,8 +336,10 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
   organization-scoped run outcome.
 - [x] Rate-limit, server, and transport failures retry within a bounded
   attempt limit; authentication and other client errors fail explicitly.
-- [ ] Background worker execution is added only after deployment runtime and
-  scheduling requirements are defined.
+- [x] Background worker execution uses the same idempotent synchronization
+  entrypoints and retry/run-ledger behavior as the CLI.
+- [ ] Add scheduling, deployment health checks, and production worker scaling
+  after the complete platform container setup is defined.
 
 ## Phase 6D -- Add intelligence and production capabilities
 

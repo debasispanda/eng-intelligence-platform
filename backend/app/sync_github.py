@@ -7,7 +7,7 @@ from app.models import Organization
 from app.services.ingestion import run_with_retries
 
 
-def main() -> None:
+def synchronize() -> int:
     settings = get_settings()
     if settings.database_url is None:
         raise RuntimeError("DATABASE_URL is required for GitHub synchronization.")
@@ -38,11 +38,11 @@ def main() -> None:
                 "github",
                 lambda: GitHubSyncService().sync(session, organization, client),
             )
-            print(f"Synchronized {synchronized} GitHub records.")
+            return synchronized
     finally:
         client.close()
         engine.dispose()
 
 
 if __name__ == "__main__":
-    main()
+    print(f"Synchronized {synchronize()} GitHub records.")

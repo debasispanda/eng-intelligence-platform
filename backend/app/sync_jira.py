@@ -7,7 +7,7 @@ from app.models import Organization
 from app.services.ingestion import run_with_retries
 
 
-def main() -> None:
+def synchronize() -> int:
     settings = get_settings()
     if not all((settings.database_url, settings.jira_base_url, settings.jira_email, settings.jira_api_token)):
         raise RuntimeError(
@@ -40,11 +40,11 @@ def main() -> None:
                 "jira",
                 lambda: JiraSyncService().sync(session, organization, client, project_keys),
             )
-            print(f"Synchronized {synchronized} Jira records.")
+            return synchronized
     finally:
         client.close()
         engine.dispose()
 
 
 if __name__ == "__main__":
-    main()
+    print(f"Synchronized {synchronize()} Jira records.")

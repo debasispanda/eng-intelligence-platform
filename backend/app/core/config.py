@@ -30,6 +30,8 @@ class Settings(BaseSettings):
     jira_email: str | None = None
     jira_api_token: str | None = None
     jira_project_keys: str = ""
+    redis_url: str = "redis://localhost:6379/0"
+    ingestion_queue_name: str = "engineering-intelligence-ingestion"
 
     @field_validator("database_url")
     @classmethod

@@ -165,6 +165,21 @@ defined in `docs/DATABASE.md` under **Dashboard Source Mapping**.
 | --- | --- | --- |
 | `500` | `{ "detail": "Dashboard overview is unavailable." }` | The overview cannot be assembled because of an unexpected server or persistence failure. |
 
+### `GET /dashboard/ingestion-runs`
+
+Returns the latest organization-scoped GitHub and Jira synchronization runs.
+The optional `limit` query parameter accepts values from 1 through 50 and
+defaults to 10.
+
+Each item contains the provider, lifecycle status, attempt count, timestamps,
+record count, and a sanitized error message when the run failed.
+
+#### Errors
+
+| Status | Response | When |
+| --- | --- | --- |
+| `500` | `{ "detail": "Ingestion run history is unavailable." }` | The configured organization is missing or persistence fails. |
+
 ## AI
 
 -   GET /summaries/daily
