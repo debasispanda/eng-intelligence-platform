@@ -4,6 +4,7 @@ from app.core.config import get_settings
 from app.db.session import create_engine_from_url, session_scope
 from app.integrations.jira import JiraClient, JiraSyncService
 from app.models import Organization
+from app.services.ingestion import run_with_retries
 
 
 def main() -> None:
@@ -33,7 +34,12 @@ def main() -> None:
                 raise RuntimeError(
                     "The configured dashboard organization must exist before synchronization."
                 )
-            synchronized = JiraSyncService().sync(session, organization, client, project_keys)
+            synchronized = run_with_retries(
+                session,
+                organization,
+                "jira",
+                lambda: JiraSyncService().sync(session, organization, client, project_keys),
+            )
             print(f"Synchronized {synchronized} Jira records.")
     finally:
         client.close()

@@ -4,6 +4,7 @@ from app.core.config import get_settings
 from app.db.session import create_engine_from_url, session_scope
 from app.integrations.github import GitHubClient, GitHubSyncService
 from app.models import Organization
+from app.services.ingestion import run_with_retries
 
 
 def main() -> None:
@@ -31,7 +32,12 @@ def main() -> None:
                     "The configured dashboard organization must exist before synchronization."
                 )
 
-            synchronized = GitHubSyncService().sync(session, organization, client)
+            synchronized = run_with_retries(
+                session,
+                organization,
+                "github",
+                lambda: GitHubSyncService().sync(session, organization, client),
+            )
             print(f"Synchronized {synchronized} GitHub records.")
     finally:
         client.close()

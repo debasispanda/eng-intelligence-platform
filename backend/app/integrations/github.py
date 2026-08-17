@@ -7,9 +7,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models import Build, Organization, PullRequest, Repository
+from app.services.ingestion import ProviderError
 
 
-class GitHubClientError(RuntimeError):
+class GitHubClientError(ProviderError):
     """Raised when GitHub cannot provide a usable response."""
 
 
@@ -108,9 +109,11 @@ class GitHubClient:
                 headers=self._headers,
             )
             if response.status_code >= 400:
-                raise GitHubClientError(
+                error = GitHubClientError(
                     f"GitHub request failed with status {response.status_code}."
                 )
+                error.retryable = response.status_code == 429 or response.status_code >= 500
+                raise error
             payload = response.json()
             if not isinstance(payload, list):
                 payload = payload.get("workflow_runs", [])

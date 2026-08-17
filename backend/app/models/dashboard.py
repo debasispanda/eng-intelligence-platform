@@ -94,3 +94,19 @@ class Epic(TimestampedModel):
     owner: Mapped[str] = mapped_column(String(255), nullable=False)
     delayed_by_days: Mapped[int] = mapped_column(Integer, nullable=False)
     risk: Mapped[str] = mapped_column(String(20), nullable=False)
+
+
+class IngestionRun(TimestampedModel):
+    __tablename__ = "ingestion_runs"
+    __table_args__ = (
+        Index("ix_ingestion_runs_organization_provider_started_at", "organization_id", "provider", "started_at"),
+    )
+
+    organization_id: Mapped[UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False)
+    provider: Mapped[str] = mapped_column(String(30), nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False)
+    attempt_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    records_synchronized: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    error_message: Mapped[str | None] = mapped_column(String(500))

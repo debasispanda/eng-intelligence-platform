@@ -1,6 +1,7 @@
 from app.models.dashboard import (
     Build,
     Epic,
+    IngestionRun,
     Issue,
     Organization,
     PullRequest,
@@ -12,6 +13,7 @@ from app.models.dashboard import (
 __all__ = [
     "Build",
     "Epic",
+    "IngestionRun",
     "Issue",
     "Organization",
     "PullRequest",

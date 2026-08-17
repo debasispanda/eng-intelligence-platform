@@ -15,6 +15,7 @@
 -   AISummary
 -   Risk
 -   Notification
+-   IngestionRun
 
 ## Principles
 
@@ -82,6 +83,11 @@ versions are `On Track`; unreleased versions with a past target date are
 `Delayed`, versions due within seven days are `At Risk`, and later versions
 are `On Track`. Versions without a target or start date are skipped.
 Sprint/board data is deferred until a normalized sprint model is added.
+
+`IngestionRun` records provider synchronization lifecycle without storing
+tokens or raw provider payloads. Its status is `running`, `succeeded`, or
+`failed`; retries increment `attempt_count`, and failures store only a
+sanitized error message.
 
 Dashboard aggregation evaluates timestamps against the request-time UTC clock:
 

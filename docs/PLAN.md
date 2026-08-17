@@ -316,6 +316,24 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
 
 - [ ] Introduce background workers and Redis for non-request ingestion and
   aggregation work.
+- [x] Add a database-backed ingestion run ledger and bounded retry orchestration
+  to the current GitHub and Jira commands before moving them to workers.
+
+### Testing and validation
+
+- [x] Test successful runs, retryable provider failures, non-retryable
+  provider failures, and persisted run status.
+- [x] Run the full backend test suite and lint checks after the orchestration
+  changes.
+
+### Success criteria
+
+- [x] Every GitHub and Jira CLI synchronization records a durable,
+  organization-scoped run outcome.
+- [x] Rate-limit, server, and transport failures retry within a bounded
+  attempt limit; authentication and other client errors fail explicitly.
+- [ ] Background worker execution is added only after deployment runtime and
+  scheduling requirements are defined.
 
 ## Phase 6D -- Add intelligence and production capabilities
 

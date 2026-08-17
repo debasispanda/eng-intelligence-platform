@@ -71,6 +71,15 @@ provided through environment configuration. Production should use Atlassian
 OAuth or an equivalent centrally managed credential flow with encryption,
 rotation, project scoping, and audit logging.
 
+### Phase 6C ingestion operations
+
+The first durable operations layer is database-backed: every GitHub or Jira
+sync records its provider, status, attempt count, timestamps, synchronized
+record count, and a sanitized error message. CLI synchronization uses bounded
+retries for rate-limit and server failures. Redis and background workers remain
+deferred until deployment infrastructure is introduced; they will consume this
+same orchestration boundary later.
+
 ## AI Components
 
 -   LiteLLM gateway

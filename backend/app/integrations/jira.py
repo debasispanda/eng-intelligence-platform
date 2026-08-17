@@ -7,9 +7,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models import Epic, Issue, Organization, Release
+from app.services.ingestion import ProviderError
 
 
-class JiraClientError(RuntimeError):
+class JiraClientError(ProviderError):
     """Raised when Jira cannot provide a usable response."""
 
 
@@ -159,7 +160,9 @@ class JiraClient:
             params=params,
         )
         if response.status_code >= 400:
-            raise JiraClientError(f"Jira request failed with status {response.status_code}.")
+            error = JiraClientError(f"Jira request failed with status {response.status_code}.")
+            error.retryable = response.status_code == 429 or response.status_code >= 500
+            raise error
         return response
 
 
