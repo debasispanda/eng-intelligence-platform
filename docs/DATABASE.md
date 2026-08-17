@@ -58,6 +58,31 @@ permissions. Production authentication is deferred to a GitHub App so
 organization installations, repository selection, credential encryption, and
 rotation can be managed independently of normalized data storage.
 
+Jira development synchronization uses a dedicated read-only service account,
+Jira site URL, account email, and API token. The configured project allowlist
+controls synchronization scope. Required access is limited to browsing
+projects, viewing issues and fields, and optionally viewing boards/sprints and
+versions/releases. Jira credentials are never stored in normalized records;
+production credential management is deferred to OAuth or an equivalent
+centrally managed integration.
+
+Jira normalization currently uses these explicit defaults: issue status maps
+`Blocked`/`Impediment` to `blocked`, completed statuses to `done`, and other
+statuses to `open`. For epics, the Jira `Change risk` field
+(`customfield_10006`) is authoritative when present. If it is empty,
+`risk-high` and `risk-medium` labels are used; otherwise risk is derived from
+delay: `0` days is `Low`, `1-7` days is `Medium`, and `8+` days is `High`.
+Delay is calculated as the non-negative difference between the UTC
+synchronization date and Jira `duedate`. The legacy `delay-days:N` label
+remains supported as an explicit delay override. Jira versions map to releases with completion derived from
+issues linked through `fixVersion`: completed issues divided by all linked
+issues, rounded to the nearest integer percentage. Released versions are
+forced to `100%`; versions without linked issues remain `0%`. Released
+versions are `On Track`; unreleased versions with a past target date are
+`Delayed`, versions due within seven days are `At Risk`, and later versions
+are `On Track`. Versions without a target or start date are skipped.
+Sprint/board data is deferred until a normalized sprint model is added.
+
 Dashboard aggregation evaluates timestamps against the request-time UTC clock:
 
 - **Open PRs** is the current count with `state = open`; its weekly delta is

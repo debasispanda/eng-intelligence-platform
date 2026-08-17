@@ -43,6 +43,41 @@ encrypted credentials, and webhook synchronization.
 
 -   POST /integrations/jira/connect
 
+### Phase 6B development synchronization
+
+The initial Jira integration is a command-based, read-only synchronization
+rather than a public HTTP endpoint. Configure the Jira site URL, account email,
+and API token through environment variables. The token must not be returned by
+the API or persisted in normalized database records.
+
+The development integration should use a dedicated Jira service account with
+the minimum read permissions required for the selected projects:
+
+- Browse projects and view project details.
+- Browse issues and view issue fields.
+- View sprints and boards when sprint data is enabled.
+- View releases/versions when release data is enabled.
+
+The first synchronization scope is explicitly selected Jira projects. It maps
+issues to `Issue`, epics to `Epic`, versions/releases to `Release`, and sprint
+dates/status to the corresponding normalized delivery fields. Raw Jira
+payloads do not cross the dashboard API boundary.
+
+For epics, `Change risk` is used when present. Otherwise risk labels are used,
+then risk is derived from due-date delay: `0` days is `Low`, `1-7` days is
+`Medium`, and `8+` days is `High`. Delay is calculated against the UTC
+synchronization date.
+
+For Jira versions, released versions are `On Track` with `100%` completion.
+Unreleased versions with a past target date are `Delayed`, versions due within
+seven days are `At Risk`, and later versions are `On Track`. Unreleased
+versions derive completion from the ratio of done issues to all issues linked
+through `fixVersion`; versions without linked issues return `0%`.
+
+For production, replace the development API-token flow with an Atlassian OAuth
+integration or centrally managed service account, including encrypted
+credential storage, project selection, rotation, and audit logging.
+
 ## Dashboard
 
 ### `GET /dashboard/overview`

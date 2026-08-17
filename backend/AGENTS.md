@@ -13,6 +13,7 @@ uv run pytest tests/test_file.py
 uv run pytest tests/test_file.py::test_name
 uv run python -m app.seed
 uv run python -m app.sync_github
+uv run python -m app.sync_jira
 ```
 
 ## Conventions
@@ -37,4 +38,7 @@ uv run python -m app.sync_github
 - GitHub synchronization is currently a bounded, read-only command. Keep
   provider payloads inside `app/integrations/` and map them to normalized
   models before persistence.
+- Jira synchronization is project-scoped and read-only. Keep the project
+  allowlist in configuration, use provider IDs for idempotency, and document
+  any new field-normalization defaults before changing the dashboard contract.
 - Add a focused test with every route, schema, or configuration change.

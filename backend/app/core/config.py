@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     github_api_url: str = "https://api.github.com"
     github_token: str | None = None
     github_page_size: int = 100
+    jira_base_url: str | None = None
+    jira_email: str | None = None
+    jira_api_token: str | None = None
+    jira_project_keys: str = ""
 
     @field_validator("database_url")
     @classmethod

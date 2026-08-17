@@ -28,6 +28,7 @@ uv run pytest tests/test_health.py
 uv run pytest tests/test_health.py::test_health_check_returns_ok
 uv run python -m app.seed
 uv run python -m app.sync_github
+uv run python -m app.sync_jira
 ```
 
 `uv run python -m app.seed` creates the idempotent
@@ -64,3 +65,19 @@ repositories visible to the authenticated user. It is not yet a
 multi-organization production integration. The production path should use a
 GitHub App with organization installation selection, least-privilege
 permissions, encrypted credentials, and webhook-based synchronization.
+
+## Jira synchronization
+
+Configure `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, and the
+comma-separated `JIRA_PROJECT_KEYS` allowlist in `.env`, then run:
+
+```bash
+uv run python -m app.sync_jira
+```
+
+The read-only synchronization imports issues, epics, and unreleased/released
+versions. Jira labels `risk-high`, `risk-medium`, and `delay-days:N` map to
+normalized epic risk and schedule delay. Releases use version dates and
+report `0%` until released or `100%` when released because Jira versions do
+not provide a normalized completion percentage. Sprint/board ingestion is
+deferred until a normalized sprint model is introduced.

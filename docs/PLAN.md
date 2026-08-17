@@ -300,7 +300,15 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
 
 ### Work
 
-- [ ] Add Jira connection and sprint/issue synchronization.
+- [x] Document Jira site, service-account, API-token, project-scope, and
+  permission setup before implementation.
+- [x] Add Jira connection, project-scoped issue/epic synchronization, and
+  version-to-release synchronization. Sprint/board ingestion remains deferred
+  until a normalized sprint model is introduced.
+- [x] Define and test Jira release status mapping from release state and target
+  date, including delayed, at-risk, and completed releases.
+- [x] Derive Jira release completion from done issues linked through
+  `fixVersion`, with released and no-linked-issue boundary behavior tested.
 
 ## Phase 6C -- Add durable ingestion operations
 

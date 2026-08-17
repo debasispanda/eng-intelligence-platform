@@ -76,6 +76,7 @@ class Release(TimestampedModel):
     __table_args__ = (Index("ix_releases_organization_target_date", "organization_id", "target_date"),)
 
     organization_id: Mapped[UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False)
+    provider_id: Mapped[str | None] = mapped_column(String(255), unique=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     owner: Mapped[str] = mapped_column(String(255), nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False)
@@ -88,6 +89,7 @@ class Epic(TimestampedModel):
     __table_args__ = (Index("ix_epics_organization_risk", "organization_id", "risk"),)
 
     organization_id: Mapped[UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False)
+    provider_id: Mapped[str | None] = mapped_column(String(255), unique=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     owner: Mapped[str] = mapped_column(String(255), nullable=False)
     delayed_by_days: Mapped[int] = mapped_column(Integer, nullable=False)

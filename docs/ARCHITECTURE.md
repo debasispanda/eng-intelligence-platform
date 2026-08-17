@@ -58,6 +58,19 @@ deliberately not the final multi-organization design: production should use a
 GitHub App installation with explicit repository selection, encrypted
 credentials, and organization approval where required.
 
+### Phase 6B Jira ingestion
+
+The Jira adapter follows the same provider-isolation boundary as GitHub. A
+read-only client fetches only explicitly configured projects, maps issues,
+epics, versions/releases, and optional sprint data into normalized entities,
+and persists them through an organization-scoped idempotent synchronization
+service.
+
+Local development uses a dedicated Jira service account with an API token
+provided through environment configuration. Production should use Atlassian
+OAuth or an equivalent centrally managed credential flow with encryption,
+rotation, project scoping, and audit logging.
+
 ## AI Components
 
 -   LiteLLM gateway
