@@ -28,6 +28,17 @@
 -   POST /integrations/github/connect
 -   POST /webhooks/github
 
+The current Phase 6A development synchronization is command-based rather than
+an HTTP endpoint. It uses a fine-grained GitHub personal access token with
+`Metadata: Read-only`, `Pull requests: Read-only`, and `Actions: Read-only`
+permissions. The token is supplied through `GITHUB_TOKEN` and is never
+returned by the API or persisted in normalized database records.
+
+The development client reads `/user/repos`, so it is limited to repositories
+visible to the authenticated user. A future production integration will use a
+GitHub App installation to support explicit organization/repository selection,
+encrypted credentials, and webhook synchronization.
+
 ## Jira
 
 -   POST /integrations/jira/connect

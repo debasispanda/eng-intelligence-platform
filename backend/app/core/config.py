@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     database_url: str | None = None
     database_schema: str = "public"
     default_organization_name: str = "Engineering Intelligence Demo"
+    github_api_url: str = "https://api.github.com"
+    github_token: str | None = None
+    github_page_size: int = 100
 
     @field_validator("database_url")
     @classmethod
@@ -44,6 +47,14 @@ class Settings(BaseSettings):
     def validate_database_schema(cls, value: str) -> str:
         if not re.fullmatch(r"[a-z_][a-z0-9_]*", value):
             raise ValueError("DATABASE_SCHEMA must be a lowercase PostgreSQL identifier.")
+
+        return value
+
+    @field_validator("github_page_size")
+    @classmethod
+    def validate_github_page_size(cls, value: int) -> int:
+        if not 1 <= value <= 100:
+            raise ValueError("GITHUB_PAGE_SIZE must be between 1 and 100.")
 
         return value
 

@@ -27,6 +27,7 @@ uv run pytest
 uv run pytest tests/test_health.py
 uv run pytest tests/test_health.py::test_health_check_returns_ok
 uv run python -m app.seed
+uv run python -m app.sync_github
 ```
 
 `uv run python -m app.seed` creates the idempotent
@@ -35,3 +36,31 @@ not call external services.
 
 `GET /dashboard/overview` serves the organization named by
 `DEFAULT_ORGANIZATION_NAME`, which defaults to that demo organization.
+
+`uv run python -m app.sync_github` performs a read-only GitHub synchronization
+for repositories, pull requests, and Actions workflow runs. It requires
+`GITHUB_TOKEN`, a migrated database, and an existing default organization.
+
+## GitHub token setup
+
+For local development, create a GitHub **fine-grained personal access token**
+from GitHub **Settings → Developer settings → Personal access tokens**. Use a
+short expiration, select only the required repositories, and grant:
+
+- **Metadata: Read-only**
+- **Pull requests: Read-only**
+- **Actions: Read-only**
+
+For organization-owned repositories, the token resource owner must be the
+organization and the organization may require administrator approval. Store the
+token only in the untracked `backend/.env` file or another secret manager:
+
+```env
+GITHUB_TOKEN=github_pat_...
+```
+
+The current development client calls `/user/repos`, so it synchronizes
+repositories visible to the authenticated user. It is not yet a
+multi-organization production integration. The production path should use a
+GitHub App with organization installation selection, least-privilege
+permissions, encrypted credentials, and webhook-based synchronization.

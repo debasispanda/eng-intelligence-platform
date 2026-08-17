@@ -41,6 +41,7 @@ class PullRequest(TimestampedModel):
     )
 
     repository_id: Mapped[UUID] = mapped_column(ForeignKey("repositories.id"), nullable=False)
+    provider_id: Mapped[str | None] = mapped_column(String(255), unique=True)
     number: Mapped[int] = mapped_column(Integer, nullable=False)
     state: Mapped[str] = mapped_column(String(20), nullable=False)
     opened_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
@@ -54,6 +55,7 @@ class Build(TimestampedModel):
     )
 
     repository_id: Mapped[UUID] = mapped_column(ForeignKey("repositories.id"), nullable=False)
+    provider_id: Mapped[str | None] = mapped_column(String(255), unique=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False)
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

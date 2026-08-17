@@ -5,6 +5,10 @@
 - Read `docs/PLAN.md` before planning or implementing work. Treat the documents in `docs/` as the source of truth for product requirements, API contracts, data model, agent responsibilities, prompts, and roadmap.
 - The repository currently contains independent frontend and backend scaffolds; it is not Dockerized.
 - Preserve unrelated work already present in the worktree.
+- For every planned item, implement the change first, run the relevant focused
+  tests and validation commands, inspect the results, and only then mark the
+  item complete in `docs/PLAN.md` or the session task tracker. Never mark work
+  complete before its validation passes.
 
 ## Commands
 

@@ -267,15 +267,52 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
 - [x] Test data, external service credentials, and production configuration are
   never required for the local end-to-end suite.
 
-## Phase 6 -- Add production data sources and intelligence incrementally
+## Phase 6A -- Ingest GitHub delivery data
 
 ### Work
 
-- [ ] Add GitHub connection, webhook verification, repository synchronization,
-  and GitHub Actions ingestion following the API specification.
+- [x] Add a read-only GitHub API client with token-based configuration and
+  bounded pagination.
+- [x] Map GitHub repositories, pull requests, and Actions workflow runs into
+  the normalized dashboard entities.
+- [x] Add an idempotent synchronization service scoped to one organization.
+- [ ] Keep the existing dashboard overview contract unchanged while replacing
+  seeded records with synchronized records.
+
+### Testing and validation
+
+- [x] Contract-test the GitHub client with recorded, sanitized response
+  fixtures; never call GitHub from tests.
+- [x] Test pagination, rate-limit/error handling, field mapping, idempotency,
+  and organization isolation.
+- [ ] Run the dashboard API against synchronized fixture data and compare
+  metrics with the existing aggregation rules.
+
+### Success criteria
+
+- [x] A configured GitHub account can populate repositories, pull requests, and
+  builds without changing frontend code.
+- [x] Repeating synchronization updates existing records without duplicates.
+- [x] Missing or unavailable GitHub data produces explicit operational errors and
+  does not corrupt dashboard data.
+
+## Phase 6B -- Add Jira delivery data
+
+### Work
+
 - [ ] Add Jira connection and sprint/issue synchronization.
+
+## Phase 6C -- Add durable ingestion operations
+
+### Work
+
 - [ ] Introduce background workers and Redis for non-request ingestion and
   aggregation work.
+
+## Phase 6D -- Add intelligence and production capabilities
+
+### Work
+
 - [ ] Add risk scoring, summaries, and the documented AI agents through the
   LiteLLM gateway. Version prompts in `docs/PROMPTS.md`.
 - [ ] Add authentication, organization isolation, artifact storage, realtime

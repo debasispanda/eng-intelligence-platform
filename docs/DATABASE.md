@@ -32,8 +32,9 @@ development database role must be able to create and drop schemas.
 ## Dashboard Source Mapping
 
 The first dashboard persists normalized records rather than raw GitHub, Jira,
-or CI payloads. Live synchronization is deferred; adapters added later must
-translate provider payloads into the following model.
+or CI payloads. Phase 6A starts with read-only GitHub synchronization; adapters
+translate provider payloads into the following model and never expose raw
+provider response shapes through the dashboard API.
 
 | Normalized entity | Future source | Identity and mapping |
 | --- | --- | --- |
@@ -44,6 +45,18 @@ translate provider payloads into the following model.
 | `Issue` | Jira issue | `provider_id` stores the provider issue identifier; `status` is normalized to dashboard states such as `blocked`. |
 | `Release` | Jira release or deployment planning source | Store organization-level owner, delivery status, completion percentage, and target date. |
 | `Epic` | Jira epic and later risk analysis | Store organization-level owner, schedule delay, and normalized risk. A separate risk history model remains deferred. |
+
+GitHub synchronization uses the provider's immutable repository, pull request,
+and workflow-run identifiers for idempotency. Tokens remain in environment
+configuration and are never persisted with normalized records. Synchronization
+is organization-scoped and uses bounded pages so rate limits and partial
+failures are explicit.
+
+Development authentication uses a short-lived fine-grained personal access
+token with repository metadata, pull-request, and Actions read-only
+permissions. Production authentication is deferred to a GitHub App so
+organization installations, repository selection, credential encryption, and
+rotation can be managed independently of normalized data storage.
 
 Dashboard aggregation evaluates timestamps against the request-time UTC clock:
 

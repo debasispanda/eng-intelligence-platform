@@ -12,6 +12,7 @@ uv run pytest
 uv run pytest tests/test_file.py
 uv run pytest tests/test_file.py::test_name
 uv run python -m app.seed
+uv run python -m app.sync_github
 ```
 
 ## Conventions
@@ -33,4 +34,7 @@ uv run python -m app.seed
 - The unauthenticated overview route scopes data to
   `DEFAULT_ORGANIZATION_NAME`; authentication replaces this development-only
   selection in a later phase.
+- GitHub synchronization is currently a bounded, read-only command. Keep
+  provider payloads inside `app/integrations/` and map them to normalized
+  models before persistence.
 - Add a focused test with every route, schema, or configuration change.
