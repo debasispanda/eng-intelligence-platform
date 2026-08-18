@@ -84,13 +84,21 @@ body {
 }
 
 .brand-logo {
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background:
-    linear-gradient(145deg, rgb(120 120 120 / 0.45), rgb(20 20 20 / 0.15)),
-    linear-gradient(0deg, var(--card), var(--card));
+  align-items: center;
+  background: linear-gradient(145deg, #0f172a, #334155);
+  border: 1px solid color-mix(in srgb, var(--foreground) 22%, transparent);
+  border-radius: 0.65rem;
+  box-shadow: 0 4px 12px rgb(15 23 42 / 0.18);
+  display: inline-flex;
+  height: 2rem;
+  justify-content: center;
+  overflow: hidden;
+  width: 2rem;
+}
+
+.brand-logo img {
+  height: 1.65rem;
+  width: 1.65rem;
 }
 
 .brand-title {

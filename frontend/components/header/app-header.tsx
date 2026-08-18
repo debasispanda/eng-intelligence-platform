@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { UserProfile } from "@/lib/dashboard-types";
 import { UserMenu } from "@/components/header/user-menu";
 
@@ -11,7 +12,15 @@ export function AppHeader({ appTitle, profile }: AppHeaderProps) {
     <header className="app-header">
       <div className="app-header-inner">
         <div className="brand-block" aria-label="App brand">
-          <span className="brand-logo" aria-hidden="true" />
+          <span className="brand-logo" aria-hidden="true">
+            <Image
+              src="/engineering-intelligence-logo.svg"
+              alt=""
+              width={26}
+              height={26}
+              priority
+            />
+          </span>
           <span className="brand-title">{appTitle}</span>
         </div>
         <UserMenu profile={profile} />

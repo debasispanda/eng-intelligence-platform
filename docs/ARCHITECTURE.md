@@ -73,7 +73,7 @@ API token; production should use OAuth or centrally managed credentials.
 
 ```mermaid
 flowchart TB
-    subgraph Platform["Platform repository"]
+    subgraph Platform["Platform"]
         PG[(PostgreSQL)]
         Redis[(Redis)]
         Secrets[Secrets and deployment configuration]

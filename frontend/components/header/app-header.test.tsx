@@ -8,6 +8,10 @@ describe("AppHeader", () => {
     render(<AppHeader appTitle={dashboardData.appTitle} profile={dashboardData.profile} />);
 
     expect(screen.getByText("Engineering Intelligence")).toBeInTheDocument();
+    expect(screen.getByLabelText("App brand").querySelector("img")).toHaveAttribute(
+      "src",
+      "/engineering-intelligence-logo.svg",
+    );
     expect(screen.getByRole("button", { name: "Open profile menu" })).toBeInTheDocument();
   });
 
