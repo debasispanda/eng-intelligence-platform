@@ -104,6 +104,36 @@ def test_summary_gateway_normalizes_labeled_confidence() -> None:
     assert gateway.summarize([]).confidence == 0.3
 
 
+def test_summary_gateway_normalizes_percent_confidence_and_string_items() -> None:
+    settings = Settings(llm_gateway_url="https://llm.example.com")
+    client = httpx.Client(
+        transport=httpx.MockTransport(
+            lambda _request: httpx.Response(
+                200,
+                json={
+                    "choices": [
+                        {
+                            "message": {
+                                "content": (
+                                    '{"summary":"Summary","risks":"Risk one",'
+                                    '"recommendations":"Do this","confidence":90}'
+                                )
+                            }
+                        }
+                    ]
+                },
+            )
+        )
+    )
+    gateway = LiteLLMGateway(settings, http_client=client)
+
+    result = gateway.summarize([])
+
+    assert result.risks == ["Risk one"]
+    assert result.recommendations == ["Do this"]
+    assert result.confidence == 0.9
+
+
 def test_summary_prompt_contains_only_normalized_risk_facts() -> None:
     prompt = _summary_prompt([_assessment()])
 

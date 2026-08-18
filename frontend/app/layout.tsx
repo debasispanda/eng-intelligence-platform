@@ -5,12 +5,10 @@ import { AppHeader } from "@/components/header/app-header";
 import { DashboardProvider } from "@/components/dashboard/dashboard-provider";
 import {
   getDashboardOverview,
-  getDeliverySummary,
   getRiskAssessments,
 } from "@/lib/dashboard-api";
 import type {
   DashboardOverview,
-  DeliverySummary,
   RiskAssessment,
   UserProfile,
 } from "@/lib/dashboard-types";
@@ -47,8 +45,6 @@ export default async function RootLayout({
   let error: string | null = null;
   let risks: RiskAssessment[] = [];
   let riskError: string | null = null;
-  let summary: DeliverySummary | null = null;
-  let summaryError: string | null = null;
 
   try {
     overview = await getDashboardOverview();
@@ -57,21 +53,12 @@ export default async function RootLayout({
   }
 
   if (overview !== null) {
-    const [riskResult, summaryResult] = await Promise.allSettled([
-      getRiskAssessments(),
-      getDeliverySummary(),
-    ]);
+    const riskResult = await Promise.allSettled([getRiskAssessments()]);
 
-    if (riskResult.status === "fulfilled") {
-      risks = riskResult.value;
+    if (riskResult[0].status === "fulfilled") {
+      risks = riskResult[0].value;
     } else {
       riskError = "Risk intelligence is temporarily unavailable.";
-    }
-
-    if (summaryResult.status === "fulfilled") {
-      summary = summaryResult.value;
-    } else {
-      summaryError = "Delivery summary is temporarily unavailable.";
     }
   }
 
@@ -86,8 +73,8 @@ export default async function RootLayout({
           overview={overview}
           riskError={riskError}
           risks={risks}
-          summary={summary}
-          summaryError={summaryError}
+          summary={null}
+          summaryError={null}
         >
           <div className="app-shell">
             <AppHeader

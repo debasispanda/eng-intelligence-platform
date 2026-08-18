@@ -20,7 +20,7 @@ services:
       LLM_GATEWAY_URL: ${LLM_GATEWAY_URL:-}
       LLM_API_KEY: ${LLM_API_KEY:-}
       LLM_MODEL: ${LLM_MODEL:-engineering-summary}
-      LLM_TIMEOUT_SECONDS: ${LLM_TIMEOUT_SECONDS:-120}
+      LLM_TIMEOUT_SECONDS: ${LLM_TIMEOUT_SECONDS:-45}
     command: ["uv", "run", "fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
     ports:
       - "${BACKEND_PORT:-8000}:8000"

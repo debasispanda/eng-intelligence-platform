@@ -14,7 +14,7 @@ function renderDashboard(
   risks: RiskAssessment[] = [],
   riskError: string | null = null,
   summary: DeliverySummary | null = null,
-  summaryError: string | null = null,
+  summaryError: string | null = "Delivery summary is temporarily unavailable.",
 ) {
   return render(
     <DashboardProvider
@@ -89,14 +89,21 @@ describe("Dashboard page", () => {
   });
 
   it("renders the generated delivery summary", () => {
-    renderDashboard(dashboardData, null, [], null, {
-      summary: "Focus on the delayed epic.",
-      risks: ["Tenant Isolation Upgrade"],
-      recommendations: ["Review delivery plan."],
-      confidence: 0.88,
-      model: "engineering-summary",
-      promptVersion: "summary-v1",
-    });
+    renderDashboard(
+      dashboardData,
+      null,
+      [],
+      null,
+      {
+        summary: "Focus on the delayed epic.",
+        risks: ["Tenant Isolation Upgrade"],
+        recommendations: ["Review delivery plan."],
+        confidence: 0.88,
+        model: "engineering-summary",
+        promptVersion: "summary-v1",
+      },
+      null,
+    );
 
     expect(screen.getByText("AI Delivery Summary")).toBeInTheDocument();
     expect(screen.getByText("Focus on the delayed epic.")).toBeInTheDocument();

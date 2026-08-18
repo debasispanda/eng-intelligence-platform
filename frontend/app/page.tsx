@@ -1,6 +1,7 @@
 "use client";
 
 import { useDashboardData } from "@/components/dashboard/dashboard-provider";
+import { DeliverySummaryPanel } from "@/components/dashboard/delivery-summary";
 import { SectionCard } from "@/components/ui/section-card";
 import { StatCard } from "@/components/ui/stat-card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -76,11 +77,12 @@ export function DashboardContent({
         ))}
       </section>
 
-      <section className="content-grid">
-        <SectionCard
-          title="Release Status"
-          description="Current release trains and delivery confidence"
-        >
+      <section className="summary-layout">
+        <div className="summary-side">
+          <SectionCard
+            title="Release Status"
+            description="Current release trains and delivery confidence"
+          >
           <div className="table-wrap" role="table" aria-label="Release status rows">
             <div className="table-head" role="row">
               <span role="columnheader">Release</span>
@@ -108,46 +110,14 @@ export function DashboardContent({
                 </span>
               </div>
             ))}
-          </div>
-        </SectionCard>
-
-        <SectionCard
-          title="AI Delivery Summary"
-          description="Generated from the latest explainable risk assessments"
-        >
-          {summaryError !== null ? (
-            <p className="muted-message">{summaryError}</p>
-          ) : summary === null ? (
-            <p className="muted-message">No delivery summary available.</p>
-          ) : (
-            <div className="summary-content">
-              <p className="summary-lead">{summary.summary}</p>
-              <div className="summary-columns">
-                <div>
-                  <h3>Key risks</h3>
-                  <SummaryList items={summary.risks} emptyLabel="No risks identified." />
-                </div>
-                <div>
-                  <h3>Recommended actions</h3>
-                  <SummaryList
-                    items={summary.recommendations}
-                    emptyLabel="No recommendations available."
-                  />
-                </div>
-              </div>
-              <small className="summary-meta">
-                Confidence {Math.round(summary.confidence * 100)}% · {summary.model} ·{" "}
-                {summary.promptVersion}
-              </small>
             </div>
-          )}
-        </SectionCard>
+          </SectionCard>
 
-        <SectionCard
-          title="Epics Off Timeline"
-          description="Top epics currently running behind plan"
-        >
-          <table className="epics-table">
+          <SectionCard
+            title="Epics Off Timeline"
+            description="Top epics currently running behind plan"
+          >
+            <table className="epics-table">
             <thead>
               <tr>
                 <th>Epic</th>
@@ -168,8 +138,11 @@ export function DashboardContent({
                 </tr>
               ))}
             </tbody>
-          </table>
-        </SectionCard>
+            </table>
+          </SectionCard>
+        </div>
+
+        <DeliverySummaryPanel initialSummary={summary} initialError={summaryError} />
       </section>
 
       <SectionCard
@@ -233,19 +206,6 @@ export function DashboardContent({
   );
 }
 
-function SummaryList({ items, emptyLabel }: { items: string[]; emptyLabel: string }) {
-  if (items.length === 0) {
-    return <p className="muted-message">{emptyLabel}</p>;
-  }
-
-  return (
-    <ul className="summary-list">
-      {items.slice(0, 5).map((item) => (
-        <li key={item}>{item}</li>
-      ))}
-    </ul>
-  );
-}
 
 export function DashboardMessage({
   message,
