@@ -78,6 +78,32 @@ def test_summary_gateway_rejects_invalid_response() -> None:
         gateway.summarize([_assessment()])
 
 
+def test_summary_gateway_normalizes_labeled_confidence() -> None:
+    settings = Settings(llm_gateway_url="https://llm.example.com")
+    client = httpx.Client(
+        transport=httpx.MockTransport(
+            lambda _request: httpx.Response(
+                200,
+                json={
+                    "choices": [
+                        {
+                            "message": {
+                                "content": (
+                                    '{"summary":"Summary","risks":[],"recommendations":[],'
+                                    '"confidence":"low - limited evidence"}'
+                                )
+                            }
+                        }
+                    ]
+                },
+            )
+        )
+    )
+    gateway = LiteLLMGateway(settings, http_client=client)
+
+    assert gateway.summarize([]).confidence == 0.3
+
+
 def test_summary_prompt_contains_only_normalized_risk_facts() -> None:
     prompt = _summary_prompt([_assessment()])
 

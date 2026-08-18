@@ -72,7 +72,7 @@ class LiteLLMGateway:
                 summary=payload["summary"],
                 risks=payload["risks"],
                 recommendations=payload["recommendations"],
-                confidence=payload["confidence"],
+                confidence=_parse_confidence(payload["confidence"]),
                 model=self._model,
                 prompt_version=SUMMARY_PROMPT_VERSION,
             )
@@ -112,3 +112,20 @@ def _summary_prompt(assessments: list[RiskAssessment]) -> str:
         "Recommend concrete next actions. Do not invent facts.\n"
         f"Risk assessments:\n{json.dumps(facts)}"
     )
+
+
+def _parse_confidence(value: Any) -> float:
+    if isinstance(value, bool):
+        raise TypeError("Confidence must be numeric.")
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        label = value.strip().lower()
+        if label.startswith("high"):
+            return 0.9
+        if label.startswith("medium"):
+            return 0.6
+        if label.startswith("low"):
+            return 0.3
+        return float(label)
+    raise ValueError("Confidence must be numeric.")
