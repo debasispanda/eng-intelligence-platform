@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     jira_project_keys: str = ""
     redis_url: str = "redis://localhost:6379/0"
     ingestion_queue_name: str = "engineering-intelligence-ingestion"
+    ingestion_schedule_seconds: int = 3600
 
     @field_validator("database_url")
     @classmethod
@@ -62,6 +63,13 @@ class Settings(BaseSettings):
         if not 1 <= value <= 100:
             raise ValueError("GITHUB_PAGE_SIZE must be between 1 and 100.")
 
+        return value
+
+    @field_validator("ingestion_schedule_seconds")
+    @classmethod
+    def validate_ingestion_schedule_seconds(cls, value: int) -> int:
+        if value < 60:
+            raise ValueError("INGESTION_SCHEDULE_SECONDS must be at least 60.")
         return value
 
     @property

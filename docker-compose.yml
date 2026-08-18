@@ -1,0 +1,65 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: engineering-intelligence-backend:dev
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:3000}
+      DEFAULT_ORGANIZATION_NAME: ${DEFAULT_ORGANIZATION_NAME:-Engineering Intelligence Demo}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      JIRA_BASE_URL: ${JIRA_BASE_URL:-}
+      JIRA_EMAIL: ${JIRA_EMAIL:-}
+      JIRA_API_TOKEN: ${JIRA_API_TOKEN:-}
+      JIRA_PROJECT_KEYS: ${JIRA_PROJECT_KEYS:-}
+    command: ["uv", "run", "fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    networks:
+      - platform
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: engineering-intelligence-backend:dev
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      JIRA_BASE_URL: ${JIRA_BASE_URL:-}
+      JIRA_EMAIL: ${JIRA_EMAIL:-}
+      JIRA_API_TOKEN: ${JIRA_API_TOKEN:-}
+      JIRA_PROJECT_KEYS: ${JIRA_PROJECT_KEYS:-}
+    command: ["uv", "run", "python", "-m", "app.worker"]
+    networks:
+      - platform
+    restart: unless-stopped
+
+  backend-scheduler:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: engineering-intelligence-backend:dev
+    environment:
+      REDIS_URL: ${REDIS_URL}
+      INGESTION_SCHEDULE_SECONDS: ${INGESTION_SCHEDULE_SECONDS:-3600}
+    command: ["uv", "run", "python", "-m", "app.scheduler"]
+    networks:
+      - platform
+    restart: unless-stopped
+
+networks:
+  platform:
+    external: true
+    name: ${PLATFORM_NETWORK_NAME:-platform_default}

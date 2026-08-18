@@ -316,6 +316,12 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
 
 - [x] Add an RQ worker entrypoint for ingestion jobs using PostgreSQL and Redis
   managed by the separate `platform` repository.
+- [x] Add a provider-specific enqueue command and Redis readiness endpoint for
+  platform schedulers and worker health checks.
+- [x] Add an application scheduler process that enqueues GitHub and Jira jobs
+  at a platform-configured interval.
+- [x] Add application-owned Compose services for the local API, worker,
+  and scheduler image without duplicating platform infrastructure services.
 - [x] Add a database-backed ingestion run ledger and bounded retry orchestration
   to the current GitHub and Jira commands before moving them to workers.
 - [x] Expose organization-scoped ingestion run history through a read-only API
@@ -329,6 +335,9 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
   changes.
 - [x] Contract-test ingestion run ordering, limits, organization scoping, and
   documented failure responses.
+- [x] Test enqueue provider selection and Redis health success/failure paths.
+- [ ] Validate scheduled execution and worker restart behavior in the platform
+  deployment.
 
 ### Success criteria
 

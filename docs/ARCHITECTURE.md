@@ -231,3 +231,9 @@ eng-intelligence-platform/
 
 Platform deployment files and infrastructure services are maintained in the
 separate `platform` repository.
+
+The application-specific `docker-compose.yml` in this repository builds the
+development backend image and runs the API, RQ worker, and scheduler. It joins
+the external network created by the platform repository and does not define
+PostgreSQL or Redis itself. Production image publishing and deployment remain
+future work.

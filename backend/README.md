@@ -29,7 +29,9 @@ uv run pytest tests/test_health.py::test_health_check_returns_ok
 uv run python -m app.seed
 uv run python -m app.sync_github
 uv run python -m app.sync_jira
+uv run python -m app.enqueue_sync github
 uv run python -m app.worker
+uv run python -m app.scheduler
 ```
 
 `uv run python -m app.seed` creates the idempotent
@@ -94,13 +96,28 @@ those services there, then configure this backend with the platform-provided
 docker compose up -d postgres redis
 ```
 
-With `REDIS_URL=redis://localhost:6379/0`, run an RQ worker in another backend
-terminal:
+The app-specific Compose file in the repository root builds and runs the local
+API, worker, and scheduler image on the platform Compose network. Use the
+root `.env` for container hostnames:
 
 ```bash
-uv run python -m app.worker
+cp .env.example .env
+docker compose up --build -d
 ```
 
+The root environment uses `postgres` and `redis` hostnames. Keep using
+`backend/.env` when running commands directly on the host, where those
+services are reached through `localhost`.
+
 Jobs can be enqueued with `enqueue_sync("github")` or `enqueue_sync("jira")`
-from `app.queue`. The worker invokes the same synchronization entrypoints used
-by the CLI.
+from `app.queue`, or through the CLI:
+
+```bash
+uv run python -m app.enqueue_sync github
+uv run python -m app.enqueue_sync jira
+```
+
+The worker invokes the same synchronization entrypoints used by the CLI.
+`GET /health/redis` is available for platform readiness checks.
+The scheduler enqueues both provider jobs at the configured
+`INGESTION_SCHEDULE_SECONDS` interval.

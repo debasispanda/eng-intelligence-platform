@@ -11,7 +11,8 @@ from app.sync_jira import synchronize as synchronize_jira
 
 def get_redis_connection(settings: Settings | None = None) -> Redis:
     app_settings = settings or get_settings()
-    return Redis.from_url(app_settings.redis_url, decode_responses=True)
+    # RQ stores pickled job payloads and metadata as bytes.
+    return Redis.from_url(app_settings.redis_url, decode_responses=False)
 
 
 def get_ingestion_queue(settings: Settings | None = None) -> Queue:

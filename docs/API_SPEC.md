@@ -23,6 +23,18 @@
 -   POST /auth/login
 -   POST /auth/logout
 
+## Health
+
+### `GET /health`
+
+Returns `{"status":"ok"}` when the API process is running.
+
+### `GET /health/redis`
+
+Checks connectivity from the API process to the platform-managed Redis
+instance. It returns `200` with `{"status":"ok"}` when Redis is reachable and
+`503` with `{"detail":"Redis is unavailable."}` otherwise.
+
 ## GitHub
 
 -   POST /integrations/github/connect
