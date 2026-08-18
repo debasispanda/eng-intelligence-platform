@@ -32,6 +32,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
 
   backend-worker:
     build:
@@ -51,6 +59,20 @@ services:
     networks:
       - platform
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "from app.queue import get_redis_connection; get_redis_connection().ping()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
 
   backend-scheduler:
     build:
@@ -60,10 +82,29 @@ services:
     environment:
       REDIS_URL: ${REDIS_URL}
       INGESTION_SCHEDULE_SECONDS: ${INGESTION_SCHEDULE_SECONDS:-3600}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      JIRA_BASE_URL: ${JIRA_BASE_URL:-}
+      JIRA_EMAIL: ${JIRA_EMAIL:-}
+      JIRA_API_TOKEN: ${JIRA_API_TOKEN:-}
+      JIRA_PROJECT_KEYS: ${JIRA_PROJECT_KEYS:-}
     command: ["uv", "run", "python", "-m", "app.scheduler"]
     networks:
       - platform
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "from app.core.config import get_settings; from app.queue import get_redis_connection; get_redis_connection(get_settings()).ping()"]
+      interval: 60s
+      timeout: 5s
+      retries: 2
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
+        reservations:
+          cpus: '0.05'
+          memory: 64M
 
 networks:
   platform:

@@ -237,3 +237,19 @@ development backend image and runs the API, RQ worker, and scheduler. It joins
 the external network created by the platform repository and does not define
 PostgreSQL or Redis itself. Production image publishing and deployment remain
 future work.
+
+## Production Deployment and Operations
+
+Refer to `docs/PRODUCTION.md` for comprehensive guidance on:
+- **Worker scaling** — Horizontal scaling with RQ, queue monitoring, and
+  resource allocation.
+- **Deployment restart policies** — Strategies for graceful shutdown, job
+  handoff, and automatic recovery.
+- **Monitoring and alerting** — Key metrics, structured logging, external
+  monitoring endpoints, and health checks.
+- **Disaster recovery** — Backup and restore procedures for PostgreSQL and
+  Redis, failover playbooks, and configuration reference.
+- **Security hardening** — Credential rotation, secrets management, encryption
+  in transit, and audit logging.
+- **Performance tuning** — Database optimization, Redis configuration, and
+  application scaling decisions.

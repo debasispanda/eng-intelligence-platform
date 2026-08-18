@@ -356,7 +356,7 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
   entrypoints and retry/run-ledger behavior as the CLI.
 - [x] Development scheduling and health checks run through the
   platform-managed PostgreSQL/Redis services.
-- [ ] Add production worker scaling, deployment restart policy verification,
+- [x] Add production worker scaling, deployment restart policy verification,
   and external monitoring when the production platform deployment is defined.
 
 ## Phase 6D -- Add intelligence and production capabilities
