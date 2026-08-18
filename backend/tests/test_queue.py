@@ -1,7 +1,9 @@
 import pytest
 
+from app.core.config import Settings
 from app.enqueue_sync import main as enqueue_main
 from app.queue import enqueue_sync
+from app.scheduler import configured_providers
 from app.scheduler import main as scheduler_main
 
 
@@ -79,6 +81,17 @@ def test_scheduler_enqueues_both_providers_each_cycle(
 ) -> None:
     providers: list[str] = []
 
+    settings = Settings(
+        github_token="token",
+        jira_base_url="https://jira.example.com",
+        jira_email="user@example.com",
+        jira_api_token="token",
+        jira_project_keys="EIP",
+    )
+
+    def fake_settings() -> Settings:
+        return settings
+
     def fake_enqueue(provider: str, _settings: object) -> None:
         providers.append(provider)
 
@@ -86,12 +99,24 @@ def test_scheduler_enqueues_both_providers_each_cycle(
         raise KeyboardInterrupt
 
     monkeypatch.setattr("app.scheduler.enqueue_sync", fake_enqueue)
+    monkeypatch.setattr("app.scheduler.get_settings", fake_settings)
     monkeypatch.setattr("app.scheduler.sleep", stop_after_cycle)
 
     with pytest.raises(KeyboardInterrupt):
         scheduler_main()
 
     assert providers == ["github", "jira"]
+
+
+def test_scheduler_skips_unconfigured_providers() -> None:
+    settings = Settings(database_url=None)
+    settings.github_token = None
+    settings.jira_base_url = None
+    settings.jira_email = None
+    settings.jira_api_token = None
+    settings.jira_project_keys = ""
+
+    assert configured_providers(settings) == ()
 
 
 def test_redis_connection_preserves_binary_rq_payloads(

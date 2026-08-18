@@ -322,6 +322,10 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
   at a platform-configured interval.
 - [x] Add application-owned Compose services for the local API, worker,
   and scheduler image without duplicating platform infrastructure services.
+- [x] Prevent overlapping provider jobs with Redis locks that expire after
+  worker failure.
+- [x] Skip scheduled providers that do not have complete credentials or
+  project scope configured.
 - [x] Add a database-backed ingestion run ledger and bounded retry orchestration
   to the current GitHub and Jira commands before moving them to workers.
 - [x] Expose organization-scoped ingestion run history through a read-only API
@@ -336,8 +340,11 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
 - [x] Contract-test ingestion run ordering, limits, organization scoping, and
   documented failure responses.
 - [x] Test enqueue provider selection and Redis health success/failure paths.
-- [ ] Validate scheduled execution and worker restart behavior in the platform
+- [x] Validate scheduled execution, worker startup, queue draining, Redis
+  readiness, and application Compose health behavior in the platform
   deployment.
+- [x] Validate binary-safe Redis/RQ payload handling and provider-job
+  deduplication.
 
 ### Success criteria
 
@@ -347,8 +354,10 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
   attempt limit; authentication and other client errors fail explicitly.
 - [x] Background worker execution uses the same idempotent synchronization
   entrypoints and retry/run-ledger behavior as the CLI.
-- [ ] Add scheduling, deployment health checks, and production worker scaling
-  after the complete platform container setup is defined.
+- [x] Development scheduling and health checks run through the
+  platform-managed PostgreSQL/Redis services.
+- [ ] Add production worker scaling, deployment restart policy verification,
+  and external monitoring when the production platform deployment is defined.
 
 ## Phase 6D -- Add intelligence and production capabilities
 

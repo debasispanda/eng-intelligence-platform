@@ -119,5 +119,6 @@ uv run python -m app.enqueue_sync jira
 
 The worker invokes the same synchronization entrypoints used by the CLI.
 `GET /health/redis` is available for platform readiness checks.
-The scheduler enqueues both provider jobs at the configured
-`INGESTION_SCHEDULE_SECONDS` interval.
+The scheduler enqueues configured provider jobs at the
+`INGESTION_SCHEDULE_SECONDS` interval. It skips providers whose credentials or
+project scope are not configured.
