@@ -73,7 +73,7 @@ describe("Dashboard page", () => {
         risk: "High",
         score: 85,
         confidence: 0.95,
-        ruleVersion: "risk-v1",
+        ruleVersion: "risk-v2",
         factors: ["Source risk is High."],
       },
     ]);

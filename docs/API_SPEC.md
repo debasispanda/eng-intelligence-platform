@@ -195,7 +195,7 @@ record count, and a sanitized error message when the run failed.
 ### `GET /dashboard/risks`
 
 Returns deterministic, explainable risk assessments for the configured
-organization's epics and releases. Scores use the versioned `risk-v1` rule set,
+organization's epics and releases. Scores use the versioned `risk-v2` rule set,
 are normalized from `0` through `100`, and include confidence and contributing
 factors. Results are ordered by score descending.
 
@@ -207,6 +207,11 @@ factors. Results are ordered by score descending.
 | `confidence` | Confidence in the deterministic assessment, from `0` through `1`. |
 | `ruleVersion` | Version of the scoring rules used. |
 | `factors` | Human-readable reasons for the assessment. |
+
+`risk-v2` combines source risk or release status with schedule/completion and
+organization pressure signals: blocked issues, failed builds in the last seven
+days, and currently open pull requests. Each signal is capped before being
+combined so one noisy metric cannot dominate the result.
 
 ## AI
 

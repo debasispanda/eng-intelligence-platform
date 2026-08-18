@@ -365,6 +365,8 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
 
 - [x] Add the first deterministic risk-scoring capability over normalized
   epics and releases, with versioned rules and explainable factors.
+- [x] Expand the scoring rules to `risk-v2` with blocked issues, recent failed
+  builds, and open pull-request pressure signals.
 - [x] Connect risk assessments to the frontend with explicit unavailable and
   empty states.
 - [ ] Add LLM-backed risk scoring, summaries, and the documented AI agents
@@ -382,6 +384,8 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
   structured-output requirements rather than unbounded prose.
 - [x] Test deterministic risk ordering, score boundaries, confidence, rule
   version, and explanation factors without calling external AI services.
+- [x] Test capped organization pressure signals and preserve the stable API
+  response shape.
 - [x] Test the risk API client, dashboard rendering, production build, and
   browser rendering with deterministic fixtures.
 

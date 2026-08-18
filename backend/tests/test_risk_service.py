@@ -1,6 +1,6 @@
-from datetime import date
+from datetime import UTC, date, datetime, timedelta
 
-from app.models import Epic, Organization, Release
+from app.models import Build, Epic, Organization, PullRequest, Release, Repository
 from app.services.risk import RiskScoringService
 
 
@@ -35,6 +35,30 @@ def test_risk_scoring_returns_explainable_sorted_assessments(db_session) -> None
             ),
         ]
     )
+    repository = Repository(
+        organization_id=organization.id,
+        provider_id="repo-1",
+        full_name="platform",
+        default_branch="main",
+    )
+    db_session.add(repository)
+    db_session.flush()
+    db_session.add_all(
+        [
+            PullRequest(
+                repository_id=repository.id,
+                number=1,
+                state="open",
+                opened_at=datetime.now(UTC),
+            ),
+            Build(
+                repository_id=repository.id,
+                status="failed",
+                started_at=datetime.now(UTC) - timedelta(hours=1),
+                completed_at=datetime.now(UTC),
+            ),
+        ]
+    )
     db_session.commit()
 
     assessments = RiskScoringService().assess(db_session, organization.id)
@@ -45,9 +69,11 @@ def test_risk_scoring_returns_explainable_sorted_assessments(db_session) -> None
         "On-track release",
     ]
     assert assessments[0].risk == "High"
-    assert assessments[1].rule_version == "risk-v1"
-    assert assessments[1].confidence == 0.95
+    assert assessments[1].rule_version == "risk-v2"
+    assert assessments[1].confidence == 0.9
     assert assessments[1].factors == [
         "Source risk is Medium.",
         "Schedule delay is 8 day(s).",
+        "1 build failure(s) occurred in the last 7 days.",
+        "1 pull request(s) are currently open.",
     ]
