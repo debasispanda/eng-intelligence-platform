@@ -9,6 +9,8 @@ test.describe("connected dashboard", () => {
     await expect(page.getByText("frontend-app")).toBeVisible();
     await expect(page.getByText("Risk Intelligence")).toBeVisible();
     await expect(page.getByText("85")).toBeVisible();
+    await expect(page.getByText("AI Delivery Summary")).toBeVisible();
+    await expect(page.getByText("Focus on the delayed epic.")).toBeVisible();
 
     await page.getByRole("button", { name: "Open profile menu" }).click();
     await expect(page.getByRole("menu")).toContainText("Riley Chen");

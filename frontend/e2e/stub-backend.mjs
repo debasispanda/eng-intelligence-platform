@@ -64,6 +64,21 @@ createServer((request, response) => {
     return;
   }
 
+  if (request.url === "/dashboard/summary" && mode === "live") {
+    response.writeHead(200, { "content-type": "application/json" });
+    response.end(
+      JSON.stringify({
+        summary: "Focus on the delayed epic.",
+        risks: ["Tenant Isolation Upgrade"],
+        recommendations: ["Review delivery plan."],
+        confidence: 0.88,
+        model: "engineering-summary",
+        promptVersion: "summary-v1",
+      }),
+    );
+    return;
+  }
+
   response.writeHead(503, { "content-type": "application/json" });
   response.end(JSON.stringify({ detail: "Dashboard overview is unavailable." }));
 }).listen(port, "127.0.0.1");

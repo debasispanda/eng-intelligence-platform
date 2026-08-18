@@ -3,8 +3,17 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppHeader } from "@/components/header/app-header";
 import { DashboardProvider } from "@/components/dashboard/dashboard-provider";
-import { getDashboardOverview, getRiskAssessments } from "@/lib/dashboard-api";
-import type { DashboardOverview, RiskAssessment, UserProfile } from "@/lib/dashboard-types";
+import {
+  getDashboardOverview,
+  getDeliverySummary,
+  getRiskAssessments,
+} from "@/lib/dashboard-api";
+import type {
+  DashboardOverview,
+  DeliverySummary,
+  RiskAssessment,
+  UserProfile,
+} from "@/lib/dashboard-types";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +47,8 @@ export default async function RootLayout({
   let error: string | null = null;
   let risks: RiskAssessment[] = [];
   let riskError: string | null = null;
+  let summary: DeliverySummary | null = null;
+  let summaryError: string | null = null;
 
   try {
     overview = await getDashboardOverview();
@@ -46,10 +57,21 @@ export default async function RootLayout({
   }
 
   if (overview !== null) {
-    try {
-      risks = await getRiskAssessments();
-    } catch {
+    const [riskResult, summaryResult] = await Promise.allSettled([
+      getRiskAssessments(),
+      getDeliverySummary(),
+    ]);
+
+    if (riskResult.status === "fulfilled") {
+      risks = riskResult.value;
+    } else {
       riskError = "Risk intelligence is temporarily unavailable.";
+    }
+
+    if (summaryResult.status === "fulfilled") {
+      summary = summaryResult.value;
+    } else {
+      summaryError = "Delivery summary is temporarily unavailable.";
     }
   }
 
@@ -64,6 +86,8 @@ export default async function RootLayout({
           overview={overview}
           riskError={riskError}
           risks={risks}
+          summary={summary}
+          summaryError={summaryError}
         >
           <div className="app-shell">
             <AppHeader

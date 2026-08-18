@@ -4,10 +4,15 @@ import { useDashboardData } from "@/components/dashboard/dashboard-provider";
 import { SectionCard } from "@/components/ui/section-card";
 import { StatCard } from "@/components/ui/stat-card";
 import { StatusBadge } from "@/components/ui/status-badge";
-import type { DashboardOverview, RiskAssessment } from "@/lib/dashboard-types";
+import type {
+  DashboardOverview,
+  DeliverySummary,
+  RiskAssessment,
+} from "@/lib/dashboard-types";
 
 export default function Home() {
-  const { error, overview, riskError, risks } = useDashboardData();
+  const { error, overview, riskError, risks, summary, summaryError } =
+    useDashboardData();
 
   if (error !== null) {
     return <DashboardMessage title="Dashboard unavailable" message={error} />;
@@ -22,7 +27,15 @@ export default function Home() {
     );
   }
 
-  return <DashboardContent overview={overview} riskError={riskError} risks={risks} />;
+  return (
+    <DashboardContent
+      overview={overview}
+      riskError={riskError}
+      risks={risks}
+      summary={summary}
+      summaryError={summaryError}
+    />
+  );
 }
 
 function isDashboardEmpty(overview: DashboardOverview): boolean {
@@ -39,10 +52,14 @@ export function DashboardContent({
   overview,
   riskError,
   risks,
+  summary,
+  summaryError,
 }: {
   overview: DashboardOverview;
   riskError: string | null;
   risks: RiskAssessment[];
+  summary: DeliverySummary | null;
+  summaryError: string | null;
 }) {
   return (
     <div className="dashboard-wrap">
@@ -92,6 +109,38 @@ export function DashboardContent({
               </div>
             ))}
           </div>
+        </SectionCard>
+
+        <SectionCard
+          title="AI Delivery Summary"
+          description="Generated from the latest explainable risk assessments"
+        >
+          {summaryError !== null ? (
+            <p className="muted-message">{summaryError}</p>
+          ) : summary === null ? (
+            <p className="muted-message">No delivery summary available.</p>
+          ) : (
+            <div className="summary-content">
+              <p className="summary-lead">{summary.summary}</p>
+              <div className="summary-columns">
+                <div>
+                  <h3>Key risks</h3>
+                  <SummaryList items={summary.risks} emptyLabel="No risks identified." />
+                </div>
+                <div>
+                  <h3>Recommended actions</h3>
+                  <SummaryList
+                    items={summary.recommendations}
+                    emptyLabel="No recommendations available."
+                  />
+                </div>
+              </div>
+              <small className="summary-meta">
+                Confidence {Math.round(summary.confidence * 100)}% · {summary.model} ·{" "}
+                {summary.promptVersion}
+              </small>
+            </div>
+          )}
         </SectionCard>
 
         <SectionCard
@@ -181,6 +230,20 @@ export function DashboardContent({
         </SectionCard>
       </section>
     </div>
+  );
+}
+
+function SummaryList({ items, emptyLabel }: { items: string[]; emptyLabel: string }) {
+  if (items.length === 0) {
+    return <p className="muted-message">{emptyLabel}</p>;
+  }
+
+  return (
+    <ul className="summary-list">
+      {items.slice(0, 5).map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
   );
 }
 

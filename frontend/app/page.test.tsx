@@ -5,6 +5,7 @@ import Loading from "@/app/loading";
 import { DashboardProvider } from "@/components/dashboard/dashboard-provider";
 import type { DashboardOverview } from "@/lib/dashboard-types";
 import type { RiskAssessment } from "@/lib/dashboard-types";
+import type { DeliverySummary } from "@/lib/dashboard-types";
 import { dashboardData } from "@/test/fixtures/dashboard-overview";
 
 function renderDashboard(
@@ -12,6 +13,8 @@ function renderDashboard(
   error: string | null = null,
   risks: RiskAssessment[] = [],
   riskError: string | null = null,
+  summary: DeliverySummary | null = null,
+  summaryError: string | null = null,
 ) {
   return render(
     <DashboardProvider
@@ -19,6 +22,8 @@ function renderDashboard(
       overview={overview}
       riskError={riskError}
       risks={risks}
+      summary={summary}
+      summaryError={summaryError}
     >
       <Home />
     </DashboardProvider>,
@@ -81,6 +86,30 @@ describe("Dashboard page", () => {
     expect(screen.getByText("Risk Intelligence")).toBeInTheDocument();
     expect(screen.getAllByText("Tenant Isolation Upgrade")).toHaveLength(2);
     expect(screen.getByText("85")).toBeInTheDocument();
+  });
+
+  it("renders the generated delivery summary", () => {
+    renderDashboard(dashboardData, null, [], null, {
+      summary: "Focus on the delayed epic.",
+      risks: ["Tenant Isolation Upgrade"],
+      recommendations: ["Review delivery plan."],
+      confidence: 0.88,
+      model: "engineering-summary",
+      promptVersion: "summary-v1",
+    });
+
+    expect(screen.getByText("AI Delivery Summary")).toBeInTheDocument();
+    expect(screen.getByText("Focus on the delayed epic.")).toBeInTheDocument();
+    expect(screen.getByText("Review delivery plan.")).toBeInTheDocument();
+    expect(screen.getByText(/Confidence 88%/)).toBeInTheDocument();
+  });
+
+  it("renders a summary error without hiding the dashboard", () => {
+    renderDashboard(dashboardData, null, [], null, null, "Summary unavailable.");
+
+    expect(screen.getByText("AI Delivery Summary")).toBeInTheDocument();
+    expect(screen.getByText("Summary unavailable.")).toBeInTheDocument();
+    expect(screen.getByText("Open PRs")).toBeInTheDocument();
   });
 
   it("renders an explicit empty state", () => {

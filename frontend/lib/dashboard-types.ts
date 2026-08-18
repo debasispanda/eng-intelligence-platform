@@ -55,3 +55,12 @@ export type RiskAssessment = {
   ruleVersion: string;
   factors: string[];
 };
+
+export type DeliverySummary = {
+  summary: string;
+  risks: string[];
+  recommendations: string[];
+  confidence: number;
+  model: string;
+  promptVersion: string;
+};

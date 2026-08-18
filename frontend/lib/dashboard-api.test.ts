@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { getDashboardOverview, getRiskAssessments } from "@/lib/dashboard-api";
+import {
+  getDashboardOverview,
+  getDeliverySummary,
+  getRiskAssessments,
+} from "@/lib/dashboard-api";
 import { dashboardData } from "@/test/fixtures/dashboard-overview";
 
 describe("getDashboardOverview", () => {
@@ -36,6 +40,26 @@ describe("getDashboardOverview", () => {
       await expect(getRiskAssessments(fetcher)).resolves.toEqual(risks);
       expect(fetcher).toHaveBeenCalledWith(
         new URL("http://localhost:8000/dashboard/risks"),
+        { cache: "no-store", headers: { Accept: "application/json" } },
+      );
+    });
+
+    it("returns the typed delivery summary response", async () => {
+      const summary = {
+        summary: "Focus on the delayed epic.",
+        risks: ["Tenant Isolation Upgrade"],
+        recommendations: ["Review delivery plan."],
+        confidence: 0.88,
+        model: "engineering-summary",
+        promptVersion: "summary-v1",
+      };
+      const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+        new Response(JSON.stringify(summary), { status: 200 }),
+      );
+
+      await expect(getDeliverySummary(fetcher)).resolves.toEqual(summary);
+      expect(fetcher).toHaveBeenCalledWith(
+        new URL("http://localhost:8000/dashboard/summary"),
         { cache: "no-store", headers: { Accept: "application/json" } },
       );
     });

@@ -398,6 +398,50 @@ body {
   font-size: 0.78rem;
 }
 
+.summary-content {
+  display: grid;
+  gap: 1rem;
+}
+
+.summary-lead {
+  color: var(--foreground);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.summary-columns {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.summary-columns h3 {
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+}
+
+.summary-list {
+  color: var(--foreground);
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.summary-meta {
+  color: var(--muted-foreground);
+}
+
+@media (max-width: 720px) {
+  .summary-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
 .risk-score {
   font-variant-numeric: tabular-nums;
   font-weight: 700;
