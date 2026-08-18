@@ -83,33 +83,37 @@ export function DashboardContent({
             title="Release Status"
             description="Current release trains and delivery confidence"
           >
-          <div className="table-wrap" role="table" aria-label="Release status rows">
-            <div className="table-head" role="row">
-              <span role="columnheader">Release</span>
-              <span role="columnheader">Owner</span>
-              <span role="columnheader">Status</span>
-              <span role="columnheader">Completion</span>
-              <span role="columnheader">Target</span>
-            </div>
-            {overview.releases.map((release) => (
-              <div key={release.name} className="table-row" role="row">
-                <span role="cell" data-label="Release">
-                  {release.name}
-                </span>
-                <span role="cell" data-label="Owner">
-                  {release.owner}
-                </span>
-                <span role="cell" data-label="Status">
-                  <StatusBadge value={release.status} />
-                </span>
-                <span role="cell" data-label="Completion">
-                  {release.completion}%
-                </span>
-                <span role="cell" data-label="Target">
-                  {release.date}
-                </span>
+            <div
+              className="table-wrap"
+              role="table"
+              aria-label="Release status rows"
+            >
+              <div className="table-head" role="row">
+                <span role="columnheader">Release</span>
+                <span role="columnheader">Owner</span>
+                <span role="columnheader">Status</span>
+                <span role="columnheader">Completion</span>
+                <span role="columnheader">Target</span>
               </div>
-            ))}
+              {overview.releases.map((release) => (
+                <div key={release.name} className="table-row" role="row">
+                  <span role="cell" data-label="Release">
+                    {release.name}
+                  </span>
+                  <span role="cell" data-label="Owner">
+                    {release.owner}
+                  </span>
+                  <span role="cell" data-label="Status">
+                    <StatusBadge value={release.status} />
+                  </span>
+                  <span role="cell" data-label="Completion">
+                    {release.completion}%
+                  </span>
+                  <span role="cell" data-label="Target">
+                    {release.date}
+                  </span>
+                </div>
+              ))}
             </div>
           </SectionCard>
 
@@ -118,56 +122,58 @@ export function DashboardContent({
             description="Top epics currently running behind plan"
           >
             <table className="epics-table">
-            <thead>
-              <tr>
-                <th>Epic</th>
-                <th>Owner</th>
-                <th>Delay</th>
-                <th>Risk</th>
-              </tr>
-            </thead>
-            <tbody>
-              {overview.offTimelineEpics.map((epic) => (
-                <tr key={epic.epic}>
-                  <td>{epic.epic}</td>
-                  <td>{epic.owner}</td>
-                  <td>{epic.delayedByDays} days</td>
-                  <td>
-                    <StatusBadge value={epic.risk} />
-                  </td>
+              <thead>
+                <tr>
+                  <th>Epic</th>
+                  <th>Owner</th>
+                  <th>Delay</th>
+                  <th>Risk</th>
                 </tr>
-              ))}
-            </tbody>
+              </thead>
+              <tbody>
+                {overview.offTimelineEpics.map((epic) => (
+                  <tr key={epic.epic}>
+                    <td>{epic.epic}</td>
+                    <td>{epic.owner}</td>
+                    <td>{epic.delayedByDays} days</td>
+                    <td>
+                      <StatusBadge value={epic.risk} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
+          </SectionCard>
+          <SectionCard
+            title="Risk Intelligence"
+            description="Explainable rule-based delivery risk assessments"
+          >
+            {riskError !== null ? (
+              <p className="muted-message">{riskError}</p>
+            ) : risks.length === 0 ? (
+              <p className="muted-message">No risk assessments available.</p>
+            ) : (
+              <ul className="risk-list">
+                {risks.slice(0, 5).map((assessment) => (
+                  <li key={assessment.entityId} className="risk-item">
+                    <div>
+                      <strong>{assessment.title}</strong>
+                      <span>{assessment.factors[0]}</span>
+                    </div>
+                    <StatusBadge value={assessment.risk} />
+                    <span className="risk-score">{assessment.score}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </SectionCard>
         </div>
 
-        <DeliverySummaryPanel initialSummary={summary} initialError={summaryError} />
+        <DeliverySummaryPanel
+          initialSummary={summary}
+          initialError={summaryError}
+        />
       </section>
-
-      <SectionCard
-        title="Risk Intelligence"
-        description="Explainable rule-based delivery risk assessments"
-      >
-        {riskError !== null ? (
-          <p className="muted-message">{riskError}</p>
-        ) : risks.length === 0 ? (
-          <p className="muted-message">No risk assessments available.</p>
-        ) : (
-          <ul className="risk-list">
-            {risks.slice(0, 5).map((assessment) => (
-              <li key={assessment.entityId} className="risk-item">
-                <div>
-                  <strong>{assessment.title}</strong>
-                  <span>{assessment.factors[0]}</span>
-                </div>
-                <StatusBadge value={assessment.risk} />
-                <span className="risk-score">{assessment.score}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </SectionCard>
 
       <section className="content-grid two-col">
         <SectionCard

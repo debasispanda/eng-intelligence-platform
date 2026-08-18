@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     llm_gateway_url: str | None = None
     llm_api_key: str | None = None
     llm_model: str = "engineering-summary"
+    llm_fallback_models: str = ""
     llm_timeout_seconds: float = 45.0
 
     @field_validator("database_url")

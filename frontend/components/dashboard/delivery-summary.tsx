@@ -92,11 +92,17 @@ export function DeliverySummaryPanel({
             <p className="summary-lead"><MetricText text={summary.summary} /></p>
           </div>
           <div className="summary-columns">
-            <SummaryColumn title="Key risks" items={summary.risks} emptyLabel="No risks identified." />
+            <SummaryColumn
+              title="Key risks"
+              items={summary.risks}
+              emptyLabel="No risks identified."
+              tone="negative"
+            />
             <SummaryColumn
               title="Recommended actions"
               items={summary.recommendations}
               emptyLabel="No recommendations available."
+              tone="positive"
             />
           </div>
           <small className="summary-meta">
@@ -113,13 +119,15 @@ function SummaryColumn({
   title,
   items,
   emptyLabel,
+  tone,
 }: {
   title: string;
   items: string[];
   emptyLabel: string;
+  tone: "negative" | "positive";
 }) {
   return (
-    <div className="summary-column">
+    <div className={`summary-column summary-column-${tone}`}>
       <h3>{title}</h3>
       {items.length === 0 ? (
         <p className="muted-message">{emptyLabel}</p>
@@ -127,12 +135,35 @@ function SummaryColumn({
         <ul className="summary-list">
           {items.slice(0, 5).map((item) => (
             <li key={item}>
-              <MetricText text={item} />
+              {tone === "negative" ? (
+                <RiskItem text={item} />
+              ) : (
+                <MetricText text={item} />
+              )}
             </li>
           ))}
         </ul>
       )}
     </div>
+  );
+}
+
+function RiskItem({ text }: { text: string }) {
+  const separatorIndex = text.indexOf(":");
+  if (separatorIndex < 0) {
+    return <MetricText text={text} />;
+  }
+
+  const title = text.slice(0, separatorIndex).trim();
+  const detail = text.slice(separatorIndex + 1).trim();
+
+  return (
+    <span className="summary-risk-item">
+      <strong className="summary-risk-title">{title}</strong>
+      <span className="summary-risk-detail">
+        <MetricText text={detail} />
+      </span>
+    </span>
   );
 }
 

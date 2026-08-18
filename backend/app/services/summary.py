@@ -28,7 +28,12 @@ class LiteLLMGateway:
         self._client = http_client or httpx.Client(timeout=settings.llm_timeout_seconds)
         self._owns_client = http_client is None
         self._url = f"{settings.llm_gateway_url.rstrip('/')}/v1/chat/completions"
-        self._model = settings.llm_model
+        self._models = [
+            model.strip()
+            for model in [settings.llm_model, *settings.llm_fallback_models.split(",")]
+            if model.strip()
+        ]
+        self._model = self._models[0]
         self._headers = {"Accept": "application/json", "Content-Type": "application/json"}
         if settings.llm_api_key:
             self._headers["Authorization"] = f"Bearer {settings.llm_api_key}"
@@ -38,28 +43,28 @@ class LiteLLMGateway:
             self._client.close()
 
     def summarize(self, assessments: list[RiskAssessment]) -> SummaryResponse:
-        request = {
-            "model": self._model,
-            "messages": [
-                {
-                    "role": "system",
-                    "content": (
-                        "Return only JSON. Keys must be summary (string), risks "
-                        "(array of strings), recommendations (array of strings), "
-                        "and confidence (number from 0 to 1)."
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": _summary_prompt(assessments),
-                },
-            ],
-            "temperature": 0,
-            "max_tokens": 600,
-            "response_format": {"type": "json_object"},
-        }
         last_error: SummaryServiceError | None = None
-        for attempt in range(2):
+        for model in self._models:
+            request = {
+                "model": model,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "Return only JSON. Keys must be summary (string), risks "
+                            "(array of strings), recommendations (array of strings), "
+                            "and confidence (number from 0 to 1)."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": _summary_prompt(assessments),
+                    },
+                ],
+                "temperature": 0,
+                "max_tokens": 600,
+                "response_format": {"type": "json_object"},
+            }
             try:
                 response = self._client.post(
                     self._url,
@@ -67,18 +72,16 @@ class LiteLLMGateway:
                     json=request,
                 )
                 if response.status_code >= 400:
-                    raise SummaryServiceError("LLM gateway request failed.")
-                return self._parse_response(response)
+                    raise SummaryServiceError(f"LLM gateway request failed for {model}.")
+                return self._parse_response(response, model)
             except httpx.RequestError as error:
-                last_error = SummaryServiceError("LLM gateway request failed.")
+                last_error = SummaryServiceError(f"LLM gateway request failed for {model}.")
                 last_error.__cause__ = error
             except SummaryServiceError as error:
                 last_error = error
-            if attempt == 1:
-                raise last_error
         raise last_error or SummaryServiceError("LLM gateway request failed.")
 
-    def _parse_response(self, response: httpx.Response) -> SummaryResponse:
+    def _parse_response(self, response: httpx.Response, model: str) -> SummaryResponse:
         try:
             content = response.json()["choices"][0]["message"]["content"]
             payload: dict[str, Any] = json.loads(content)
@@ -87,7 +90,7 @@ class LiteLLMGateway:
                 risks=_parse_items(payload["risks"]),
                 recommendations=_parse_items(payload["recommendations"]),
                 confidence=_parse_confidence(payload["confidence"]),
-                model=self._model,
+                model=model,
                 prompt_version=SUMMARY_PROMPT_VERSION,
             )
         except (KeyError, IndexError, TypeError, ValueError) as error:

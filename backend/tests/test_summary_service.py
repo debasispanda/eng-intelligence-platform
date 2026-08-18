@@ -1,3 +1,5 @@
+import json
+
 import httpx
 import pytest
 
@@ -76,6 +78,42 @@ def test_summary_gateway_rejects_invalid_response() -> None:
 
     with pytest.raises(SummaryServiceError, match="invalid summary output"):
         gateway.summarize([_assessment()])
+
+
+def test_summary_gateway_uses_fallback_model() -> None:
+    settings = Settings(
+        llm_gateway_url="https://llm.example.com",
+        llm_model="engineering-summary",
+        llm_fallback_models="engineering-summary-groq",
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        model = json.loads(request.content)["model"]
+        if model == "engineering-summary":
+            return httpx.Response(503, json={"error": "provider unavailable"})
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {
+                        "message": {
+                            "content": (
+                                '{"summary":"Fallback summary","risks":[],' 
+                                '"recommendations":[],"confidence":0.8}'
+                            )
+                        }
+                    }
+                ]
+            },
+        )
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    gateway = LiteLLMGateway(settings, http_client=client)
+
+    result = gateway.summarize([_assessment()])
+
+    assert result.summary == "Fallback summary"
+    assert result.model == "engineering-summary-groq"
 
 
 def test_summary_gateway_normalizes_labeled_confidence() -> None:
