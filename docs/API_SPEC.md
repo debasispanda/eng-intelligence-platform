@@ -192,6 +192,22 @@ record count, and a sanitized error message when the run failed.
 | --- | --- | --- |
 | `500` | `{ "detail": "Ingestion run history is unavailable." }` | The configured organization is missing or persistence fails. |
 
+### `GET /dashboard/risks`
+
+Returns deterministic, explainable risk assessments for the configured
+organization's epics and releases. Scores use the versioned `risk-v1` rule set,
+are normalized from `0` through `100`, and include confidence and contributing
+factors. Results are ordered by score descending.
+
+| Field | Description |
+| --- | --- |
+| `entityType` | `epic` or `release`. |
+| `risk` | `Low`, `Medium`, or `High`. |
+| `score` | Rule-based score from `0` through `100`. |
+| `confidence` | Confidence in the deterministic assessment, from `0` through `1`. |
+| `ruleVersion` | Version of the scoring rules used. |
+| `factors` | Human-readable reasons for the assessment. |
+
 ## AI
 
 -   GET /summaries/daily

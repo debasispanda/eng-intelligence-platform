@@ -10,8 +10,9 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings, get_settings
 from app.db.session import create_engine_from_url, session_scope
 from app.models import IngestionRun, Organization
-from app.schemas.dashboard import DashboardOverview, IngestionRunSummary
+from app.schemas.dashboard import DashboardOverview, IngestionRunSummary, RiskAssessment
 from app.services.dashboard import DashboardService
+from app.services.risk import RiskScoringService
 
 logger = logging.getLogger(__name__)
 
@@ -85,4 +86,26 @@ def get_ingestion_runs(
         raise HTTPException(
             status_code=500,
             detail="Ingestion run history is unavailable.",
+        ) from None
+
+
+@router.get("/risks", response_model=list[RiskAssessment])
+def get_risk_assessments(
+    session: Annotated[Session, Depends(get_dashboard_session)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> list[RiskAssessment]:
+    try:
+        organization_id = session.scalar(
+            select(Organization.id).where(
+                Organization.name == settings.default_organization_name
+            )
+        )
+        if organization_id is None:
+            raise LookupError("The configured dashboard organization does not exist.")
+        return RiskScoringService().assess(session, organization_id)
+    except (LookupError, SQLAlchemyError):
+        logger.exception("Unable to calculate risk assessments.")
+        raise HTTPException(
+            status_code=500,
+            detail="Risk assessments are unavailable.",
         ) from None

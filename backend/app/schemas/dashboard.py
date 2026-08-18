@@ -74,3 +74,14 @@ class IngestionRunSummary(ApiModel):
     finished_at: datetime | None
     records_synchronized: int = Field(ge=0)
     error_message: str | None
+
+
+class RiskAssessment(ApiModel):
+    entity_type: Literal["epic", "release"]
+    entity_id: str
+    title: str
+    risk: Literal["Low", "Medium", "High"]
+    score: int = Field(ge=0, le=100)
+    confidence: float = Field(ge=0, le=1)
+    rule_version: str
+    factors: list[str]

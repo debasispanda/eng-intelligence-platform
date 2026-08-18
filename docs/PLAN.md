@@ -363,8 +363,10 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
 
 ### Work
 
-- [ ] Add risk scoring, summaries, and the documented AI agents through the
-  LiteLLM gateway. Version prompts in `docs/PROMPTS.md`.
+- [x] Add the first deterministic risk-scoring capability over normalized
+  epics and releases, with versioned rules and explainable factors.
+- [ ] Add LLM-backed risk scoring, summaries, and the documented AI agents
+  through the LiteLLM gateway. Version prompts in `docs/PROMPTS.md`.
 - [ ] Add authentication, organization isolation, artifact storage, realtime
   updates, and Docker deployment after the connected dashboard is stable.
 
@@ -376,6 +378,8 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
   dependency behavior.
 - [ ] Evaluate AI outputs against versioned fixtures and assert confidence and
   structured-output requirements rather than unbounded prose.
+- [x] Test deterministic risk ordering, score boundaries, confidence, rule
+  version, and explanation factors without calling external AI services.
 
 ### Success criteria
 
