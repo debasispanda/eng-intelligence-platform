@@ -3,41 +3,60 @@ import pytest
 from app.enqueue_sync import main as enqueue_main
 from app.queue import enqueue_sync
 from app.scheduler import main as scheduler_main
-from app.sync_github import synchronize as synchronize_github
-from app.sync_jira import synchronize as synchronize_jira
 
 
 class FakeQueue:
     def __init__(self) -> None:
         self.enqueued: list[object] = []
 
-    def enqueue(self, job: object) -> str:
-        self.enqueued.append(job)
+    def enqueue(self, job: object, *args: object) -> str:
+        self.enqueued.append((job, *args))
         return "job-id"
 
 
+class FakeRedis:
+    def set(self, *_args: object, **_kwargs: object) -> bool:
+        return True
+
+
+class BusyRedis(FakeRedis):
+    def set(self, *_args: object, **_kwargs: object) -> bool:
+        return False
+
+
 @pytest.mark.parametrize(
-    ("provider", "expected_job"),
+    "provider",
     [
-        ("github", synchronize_github),
-        ("jira", synchronize_jira),
+        "github",
+        "jira",
     ],
 )
 def test_enqueue_sync_selects_provider_job(
     monkeypatch: pytest.MonkeyPatch,
     provider: str,
-    expected_job: object,
 ) -> None:
     queue = FakeQueue()
     monkeypatch.setattr("app.queue.get_ingestion_queue", lambda _settings=None: queue)
+    monkeypatch.setattr("app.queue.get_redis_connection", lambda _settings=None: FakeRedis())
 
     assert enqueue_sync(provider) == "job-id"
-    assert queue.enqueued == [expected_job]
+    assert queue.enqueued[0][1] == provider
 
 
 def test_enqueue_sync_rejects_unknown_provider() -> None:
     with pytest.raises(ValueError, match="Unsupported ingestion provider"):
         enqueue_sync("unknown")
+
+
+def test_enqueue_sync_skips_provider_when_job_is_active(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    queue = FakeQueue()
+    monkeypatch.setattr("app.queue.get_ingestion_queue", lambda _settings=None: queue)
+    monkeypatch.setattr("app.queue.get_redis_connection", lambda _settings=None: BusyRedis())
+
+    assert enqueue_sync("github") is None
+    assert queue.enqueued == []
 
 
 def test_enqueue_command_prints_job_id(

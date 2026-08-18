@@ -9,6 +9,9 @@ def main() -> None:
     args = parser.parse_args()
 
     job = enqueue_sync(args.provider)
+    if job is None:
+        print(f"{args.provider} ingestion job is already queued or running.")
+        return
     print(f"Enqueued {args.provider} ingestion job {job.id}.")
 
 
