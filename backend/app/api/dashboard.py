@@ -10,9 +10,15 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings, get_settings
 from app.db.session import create_engine_from_url, session_scope
 from app.models import IngestionRun, Organization
-from app.schemas.dashboard import DashboardOverview, IngestionRunSummary, RiskAssessment
+from app.schemas.dashboard import (
+    DashboardOverview,
+    IngestionRunSummary,
+    RiskAssessment,
+    SummaryResponse,
+)
 from app.services.dashboard import DashboardService
 from app.services.risk import RiskScoringService
+from app.services.summary import SummaryServiceError, get_summary
 
 logger = logging.getLogger(__name__)
 
@@ -108,4 +114,32 @@ def get_risk_assessments(
         raise HTTPException(
             status_code=500,
             detail="Risk assessments are unavailable.",
+        ) from None
+
+
+@router.get("/summary", response_model=SummaryResponse)
+def get_dashboard_summary(
+    session: Annotated[Session, Depends(get_dashboard_session)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> SummaryResponse:
+    try:
+        organization_id = session.scalar(
+            select(Organization.id).where(
+                Organization.name == settings.default_organization_name
+            )
+        )
+        if organization_id is None:
+            raise LookupError("The configured dashboard organization does not exist.")
+        return get_summary(session, organization_id, settings)
+    except SummaryServiceError:
+        logger.exception("Unable to generate dashboard summary.")
+        raise HTTPException(
+            status_code=503,
+            detail="Dashboard summary is unavailable.",
+        ) from None
+    except (LookupError, SQLAlchemyError):
+        logger.exception("Unable to load dashboard summary.")
+        raise HTTPException(
+            status_code=500,
+            detail="Dashboard summary is unavailable.",
         ) from None

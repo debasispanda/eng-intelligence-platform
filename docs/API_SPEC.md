@@ -213,6 +213,20 @@ organization pressure signals: blocked issues, failed builds in the last seven
 days, and currently open pull requests. Each signal is capped before being
 combined so one noisy metric cannot dominate the result.
 
+### `GET /dashboard/summary`
+
+Returns a structured delivery summary generated through the configured
+LiteLLM-compatible gateway. The gateway receives normalized risk facts only;
+credentials and raw provider payloads never leave the backend.
+
+The response includes `summary`, `risks`, `recommendations`, `confidence`,
+`model`, and `promptVersion`. If the gateway is not configured or returns
+invalid output, the endpoint returns `503` with:
+
+```json
+{"detail":"Dashboard summary is unavailable."}
+```
+
 ## AI
 
 -   GET /summaries/daily

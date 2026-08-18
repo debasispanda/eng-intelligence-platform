@@ -371,6 +371,8 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
   empty states.
 - [ ] Add LLM-backed risk scoring, summaries, and the documented AI agents
   through the LiteLLM gateway. Version prompts in `docs/PROMPTS.md`.
+- [x] Add a structured LiteLLM-compatible summary gateway, versioned prompt,
+  Pydantic validation, and an unavailable response when the gateway is absent.
 - [ ] Add authentication, organization isolation, artifact storage, realtime
   updates, and Docker deployment after the connected dashboard is stable.
 
@@ -386,6 +388,7 @@ change the active schema by setting `DATABASE_SCHEMA=platform` beforehand.
   version, and explanation factors without calling external AI services.
 - [x] Test capped organization pressure signals and preserve the stable API
   response shape.
+- [x] Test valid and invalid summary gateway responses with mocked HTTP calls.
 - [x] Test the risk API client, dashboard rendering, production build, and
   browser rendering with deterministic fixtures.
 

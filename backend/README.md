@@ -122,3 +122,7 @@ The worker invokes the same synchronization entrypoints used by the CLI.
 The scheduler enqueues configured provider jobs at the
 `INGESTION_SCHEDULE_SECONDS` interval. It skips providers whose credentials or
 project scope are not configured.
+
+Set `LLM_GATEWAY_URL` and optional `LLM_API_KEY` to enable
+`GET /dashboard/summary`. The gateway must expose an OpenAI-compatible
+`/chat/completions` endpoint. Without it, the endpoint returns `503`.

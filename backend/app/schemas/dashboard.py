@@ -85,3 +85,12 @@ class RiskAssessment(ApiModel):
     confidence: float = Field(ge=0, le=1)
     rule_version: str
     factors: list[str]
+
+
+class SummaryResponse(ApiModel):
+    summary: str
+    risks: list[str]
+    recommendations: list[str]
+    confidence: float = Field(ge=0, le=1)
+    model: str
+    prompt_version: str

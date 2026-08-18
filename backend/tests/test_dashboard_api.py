@@ -5,6 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.api.dashboard import get_dashboard_session
+from app.api.dashboard import get_settings as dashboard_get_settings
+from app.core.config import Settings, get_settings
 from app.models import Organization, User
 from app.seed import DEMO_ORGANIZATION_NAME, seed_dashboard_data
 
@@ -108,3 +110,26 @@ async def test_dashboard_overview_returns_documented_error_for_persistence_failu
 
     assert response.status_code == 500
     assert response.json() == {"detail": "Dashboard overview is unavailable."}
+
+
+@pytest.mark.anyio
+async def test_dashboard_summary_returns_service_unavailable_without_llm_gateway(
+    app: FastAPI,
+    db_session: Session,
+) -> None:
+    organization = Organization(name=get_settings().default_organization_name)
+    db_session.add(organization)
+    db_session.commit()
+    app.dependency_overrides[get_dashboard_session] = lambda: db_session
+    app.dependency_overrides[dashboard_get_settings] = lambda: Settings(
+        llm_gateway_url=None,
+    )
+
+    try:
+        async with _test_client(app) as client:
+            response = await client.get("/dashboard/summary")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 503
+    assert response.json() == {"detail": "Dashboard summary is unavailable."}

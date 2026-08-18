@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     ingestion_queue_name: str = "engineering-intelligence-ingestion"
     ingestion_schedule_seconds: int = 3600
     ingestion_lock_seconds: int = 7200
+    llm_gateway_url: str | None = None
+    llm_api_key: str | None = None
+    llm_model: str = "engineering-summary"
+    llm_timeout_seconds: float = 120.0
 
     @field_validator("database_url")
     @classmethod
