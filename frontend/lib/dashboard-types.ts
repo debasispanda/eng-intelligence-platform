@@ -44,3 +44,14 @@ export type DashboardOverview = {
     mostFailed: HotRepository[];
   };
 };
+
+export type RiskAssessment = {
+  entityType: "epic" | "release";
+  entityId: string;
+  title: string;
+  risk: "Low" | "Medium" | "High";
+  score: number;
+  confidence: number;
+  ruleVersion: string;
+  factors: string[];
+};

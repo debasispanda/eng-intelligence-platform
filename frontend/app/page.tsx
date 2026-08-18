@@ -4,10 +4,10 @@ import { useDashboardData } from "@/components/dashboard/dashboard-provider";
 import { SectionCard } from "@/components/ui/section-card";
 import { StatCard } from "@/components/ui/stat-card";
 import { StatusBadge } from "@/components/ui/status-badge";
-import type { DashboardOverview } from "@/lib/dashboard-types";
+import type { DashboardOverview, RiskAssessment } from "@/lib/dashboard-types";
 
 export default function Home() {
-  const { error, overview } = useDashboardData();
+  const { error, overview, riskError, risks } = useDashboardData();
 
   if (error !== null) {
     return <DashboardMessage title="Dashboard unavailable" message={error} />;
@@ -22,7 +22,7 @@ export default function Home() {
     );
   }
 
-  return <DashboardContent overview={overview} />;
+  return <DashboardContent overview={overview} riskError={riskError} risks={risks} />;
 }
 
 function isDashboardEmpty(overview: DashboardOverview): boolean {
@@ -35,7 +35,15 @@ function isDashboardEmpty(overview: DashboardOverview): boolean {
   );
 }
 
-export function DashboardContent({ overview }: { overview: DashboardOverview }) {
+export function DashboardContent({
+  overview,
+  riskError,
+  risks,
+}: {
+  overview: DashboardOverview;
+  riskError: string | null;
+  risks: RiskAssessment[];
+}) {
   return (
     <div className="dashboard-wrap">
       <section className="kpi-grid" aria-label="Key metrics">
@@ -114,6 +122,30 @@ export function DashboardContent({ overview }: { overview: DashboardOverview }) 
           </table>
         </SectionCard>
       </section>
+
+      <SectionCard
+        title="Risk Intelligence"
+        description="Explainable rule-based delivery risk assessments"
+      >
+        {riskError !== null ? (
+          <p className="muted-message">{riskError}</p>
+        ) : risks.length === 0 ? (
+          <p className="muted-message">No risk assessments available.</p>
+        ) : (
+          <ul className="risk-list">
+            {risks.slice(0, 5).map((assessment) => (
+              <li key={assessment.entityId} className="risk-item">
+                <div>
+                  <strong>{assessment.title}</strong>
+                  <span>{assessment.factors[0]}</span>
+                </div>
+                <StatusBadge value={assessment.risk} />
+                <span className="risk-score">{assessment.score}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </SectionCard>
 
       <section className="content-grid two-col">
         <SectionCard

@@ -4,14 +4,22 @@ import Home from "@/app/page";
 import Loading from "@/app/loading";
 import { DashboardProvider } from "@/components/dashboard/dashboard-provider";
 import type { DashboardOverview } from "@/lib/dashboard-types";
+import type { RiskAssessment } from "@/lib/dashboard-types";
 import { dashboardData } from "@/test/fixtures/dashboard-overview";
 
 function renderDashboard(
   overview: DashboardOverview | null = dashboardData,
   error: string | null = null,
+  risks: RiskAssessment[] = [],
+  riskError: string | null = null,
 ) {
   return render(
-    <DashboardProvider error={error} overview={overview}>
+    <DashboardProvider
+      error={error}
+      overview={overview}
+      riskError={riskError}
+      risks={risks}
+    >
       <Home />
     </DashboardProvider>,
   );
@@ -54,6 +62,25 @@ describe("Dashboard page", () => {
     expect(screen.getByText("Hot Repositories: Most Failed")).toBeInTheDocument();
     expect(screen.getByText("frontend-app")).toBeInTheDocument();
     expect(screen.getByText("mobile-sdk")).toBeInTheDocument();
+  });
+
+  it("renders risk intelligence assessments", () => {
+    renderDashboard(dashboardData, null, [
+      {
+        entityType: "epic",
+        entityId: "epic-1",
+        title: "Tenant Isolation Upgrade",
+        risk: "High",
+        score: 85,
+        confidence: 0.95,
+        ruleVersion: "risk-v1",
+        factors: ["Source risk is High."],
+      },
+    ]);
+
+    expect(screen.getByText("Risk Intelligence")).toBeInTheDocument();
+    expect(screen.getAllByText("Tenant Isolation Upgrade")).toHaveLength(2);
+    expect(screen.getByText("85")).toBeInTheDocument();
   });
 
   it("renders an explicit empty state", () => {

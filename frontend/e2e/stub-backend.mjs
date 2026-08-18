@@ -45,6 +45,25 @@ createServer((request, response) => {
     return;
   }
 
+  if (request.url === "/dashboard/risks" && mode === "live") {
+    response.writeHead(200, { "content-type": "application/json" });
+    response.end(
+      JSON.stringify([
+        {
+          entityType: "epic",
+          entityId: "epic-1",
+          title: "Tenant Isolation Upgrade",
+          risk: "High",
+          score: 85,
+          confidence: 0.95,
+          ruleVersion: "risk-v1",
+          factors: ["Source risk is High."],
+        },
+      ]),
+    );
+    return;
+  }
+
   response.writeHead(503, { "content-type": "application/json" });
   response.end(JSON.stringify({ detail: "Dashboard overview is unavailable." }));
 }).listen(port, "127.0.0.1");

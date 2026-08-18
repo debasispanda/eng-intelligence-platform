@@ -2,11 +2,13 @@
 
 import { createContext, useContext } from "react";
 import type { ReactNode } from "react";
-import type { DashboardOverview } from "@/lib/dashboard-types";
+import type { DashboardOverview, RiskAssessment } from "@/lib/dashboard-types";
 
 type DashboardContextValue = {
   error: string | null;
   overview: DashboardOverview | null;
+  riskError: string | null;
+  risks: RiskAssessment[];
 };
 
 const DashboardContext = createContext<DashboardContextValue | null>(null);
@@ -19,9 +21,11 @@ export function DashboardProvider({
   children,
   error,
   overview,
+  riskError,
+  risks,
 }: DashboardProviderProps) {
   return (
-    <DashboardContext.Provider value={{ error, overview }}>
+    <DashboardContext.Provider value={{ error, overview, riskError, risks }}>
       {children}
     </DashboardContext.Provider>
   );

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getDashboardOverview } from "@/lib/dashboard-api";
+import { getDashboardOverview, getRiskAssessments } from "@/lib/dashboard-api";
 import { dashboardData } from "@/test/fixtures/dashboard-overview";
 
 describe("getDashboardOverview", () => {
@@ -13,6 +13,32 @@ describe("getDashboardOverview", () => {
       new URL("http://localhost:8000/dashboard/overview"),
       { cache: "no-store", headers: { Accept: "application/json" } },
     );
+  });
+
+  describe("getRiskAssessments", () => {
+    it("returns risk assessments from the risk endpoint", async () => {
+      const risks = [
+        {
+          entityType: "epic",
+          entityId: "epic-1",
+          title: "Tenant Isolation Upgrade",
+          risk: "High",
+          score: 85,
+          confidence: 0.95,
+          ruleVersion: "risk-v1",
+          factors: ["Source risk is High."],
+        },
+      ];
+      const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+        new Response(JSON.stringify(risks), { status: 200 }),
+      );
+
+      await expect(getRiskAssessments(fetcher)).resolves.toEqual(risks);
+      expect(fetcher).toHaveBeenCalledWith(
+        new URL("http://localhost:8000/dashboard/risks"),
+        { cache: "no-store", headers: { Accept: "application/json" } },
+      );
+    });
   });
 
   it("surfaces an unsuccessful overview response", async () => {

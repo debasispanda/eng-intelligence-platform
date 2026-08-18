@@ -3,8 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppHeader } from "@/components/header/app-header";
 import { DashboardProvider } from "@/components/dashboard/dashboard-provider";
-import { getDashboardOverview } from "@/lib/dashboard-api";
-import type { DashboardOverview, UserProfile } from "@/lib/dashboard-types";
+import { getDashboardOverview, getRiskAssessments } from "@/lib/dashboard-api";
+import type { DashboardOverview, RiskAssessment, UserProfile } from "@/lib/dashboard-types";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,11 +36,21 @@ export default async function RootLayout({
 }>) {
   let overview: DashboardOverview | null = null;
   let error: string | null = null;
+  let risks: RiskAssessment[] = [];
+  let riskError: string | null = null;
 
   try {
     overview = await getDashboardOverview();
   } catch {
     error = "Dashboard data is unavailable. Check the backend connection and try again.";
+  }
+
+  if (overview !== null) {
+    try {
+      risks = await getRiskAssessments();
+    } catch {
+      riskError = "Risk intelligence is temporarily unavailable.";
+    }
   }
 
   return (
@@ -49,7 +59,12 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full app-body">
-        <DashboardProvider error={error} overview={overview}>
+        <DashboardProvider
+          error={error}
+          overview={overview}
+          riskError={riskError}
+          risks={risks}
+        >
           <div className="app-shell">
             <AppHeader
               appTitle={overview?.appTitle ?? "Engineering Intelligence"}
